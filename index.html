@@ -272,14 +272,8 @@
     let currentUser = null;
     let conversationHistory = [];
 
-    // معالجة نتيجة إعادة التوجيه لمتصفحات الجوال (Redirect Result)
-    auth.getRedirectResult().then(result => {
-      if (result && result.user) {
-        recordLog("info", "تسجيل الدخول", "تم تسجيل الدخول بنجاح بعد التحويل");
-      }
-    }).catch(err => {
-      recordLog("error", "فشل التحويل", err.message, "تأكد من تفعيل نطاق الموقع في Firebase Authentication Settings");
-    });
+    // تثبيت استمرار تسجيل الدخول في ذاكرة المتصفح
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
     auth.onAuthStateChanged(user => {
       const authDiv = document.getElementById("authStatus");
@@ -288,10 +282,13 @@
 
       if (user) {
         currentUser = user;
-        authDiv.innerHTML = `<img src="${user.photoURL || ''}" alt="User"> <span>${user.displayName || 'مستخدم'}</span>`;
+        const name = user.displayName || user.email || 'مستخدم';
+        const photo = user.photoURL ? `<img src="${user.photoURL}" alt="User">` : '';
+        authDiv.innerHTML = `${photo} <span>${name}</span>`;
         authBtn.innerText = "خروج";
         authBtn.className = "btn-action btn-logout";
         sync.innerText = "🟢 متصل";
+        recordLog("info", "الحساب", `تم تسجيل الدخول باسم: ${name}`);
         loadUserHistory(user.uid);
       } else {
         currentUser = null;
@@ -302,18 +299,25 @@
       }
     });
 
-    function handleAuth() {
+    async function handleAuth() {
       if (currentUser) {
-        auth.signOut();
+        await auth.signOut();
+        location.reload();
       } else {
         const provider = new firebase.auth.GoogleAuthProvider();
-        // استخدام signInWithRedirect لضمان العمل على متصفحات الجوال
-        auth.signInWithRedirect(provider).catch(err => {
-          recordLog("error", "تسجيل الدخول", err.message, "تأكد من تفعيل Google في صفحة Firebase Console");
+        provider.setCustomParameters({ prompt: 'select_account' });
+        try {
+          const result = await auth.signInWithPopup(provider);
+          if (result.user) {
+            recordLog("info", "تسجيل الدخول", "تم الدخول بنجاح عبر Google");
+          }
+        } catch (err) {
+          recordLog("error", "تسجيل الدخول", err.message, "تأكد من السماح بالنوافذ المنبثقة للموقع في المتصفح");
           alert("خطأ بتسجيل الدخول: " + err.message);
-        });
+        }
       }
     }
+
 
     function saveMessageToDb(role, content, modelName = "") {
       if (!currentUser) return;
