@@ -306,56 +306,73 @@
         z-index: 10;
       }
       .top-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-      /* حاوية الشعار الزجاجية ومنع الحفظ بالضغط المطول */
-      .brand-logo-frame {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        height: 38px;
-        padding: 2px 8px;
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(224, 242, 254, 0.6) 100%);
-        border: 1.5px solid #38bdf8;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(2, 132, 199, 0.12);
-        overflow: hidden;
-      }
+      /* دمج الشعار بالخلفية بدون أي إطار أو حدود نهائياً */
       .brand-logo-img {
-        height: 48px;
+        height: 32px;
         width: auto;
-        transform: scale(1.35); /* تكبير الشعار لقص الهوامش الفارغة في الصورة */
         object-fit: contain;
         display: block;
-        user-select: none !important;
-        -webkit-user-select: none !important;
-        -webkit-user-drag: none !important;
-        -webkit-touch-callout: none !important;
-        pointer-events: none !important; /* منع الضغط المطول نهائياً */
-      }
-      .gatekeeper-logo-frame {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        height: 100px;
-        width: 190px;
-        background: rgba(255, 255, 255, 0.95);
-        border: 2px solid #0284c7;
-        border-radius: 20px;
-        box-shadow: 0 10px 25px rgba(2, 132, 199, 0.2);
-        overflow: hidden;
-        margin-bottom: 6px;
-      }
-      .brand-logo-gatekeeper {
-        height: 125px;
-        width: auto;
-        transform: scale(1.4);
-        object-fit: contain;
+        mix-blend-mode: multiply; /* إخفاء الخلفية البيضاء ودمج الرسم بالخلفية */
         user-select: none !important;
         -webkit-user-select: none !important;
         -webkit-user-drag: none !important;
         -webkit-touch-callout: none !important;
         pointer-events: none !important;
       }
-      .user-info { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+      .brand-logo-gatekeeper {
+        height: 70px;
+        width: auto;
+        object-fit: contain;
+        mix-blend-mode: multiply;
+        user-select: none !important;
+        -webkit-user-select: none !important;
+        -webkit-user-drag: none !important;
+        -webkit-touch-callout: none !important;
+        pointer-events: none !important;
+        margin-bottom: 8px;
+      }
+
+      /* شريط علوي أنيق ومتناسق العناصر */
+      .top-bar { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        gap: 8px; 
+        width: 100%;
+      }
+      .header-right-side {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+        overflow: hidden;
+      }
+      .actions-group {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+      }
+      .user-info { 
+        display: flex; 
+        align-items: center; 
+        gap: 6px; 
+        font-size: 12.5px; 
+        font-weight: 600; 
+        color: var(--text); 
+        max-width: 120px;
+        overflow: hidden; 
+        white-space: nowrap; 
+        text-overflow: ellipsis; 
+      }
+      .user-info img { 
+        width: 26px; 
+        height: 26px; 
+        border-radius: 50%; 
+        border: 1.5px solid #0284c7; 
+        flex-shrink: 0; 
+      }
+
 
 
       .user-info img { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #0284c7; flex-shrink: 0; }
@@ -1343,12 +1360,8 @@
     <!-- بوابة الدخول الزجاجية الإلزامية soodye -->
     <div id="gatekeeperOverlay">
       <div class="gatekeeper-card">
-        <div class="gatekeeper-logo-frame">
-          <img src="logo.png" alt="soodye" class="brand-logo-gatekeeper" oncontextmenu="return false;">
-        </div>
+        <img src="logo.png" alt="soodye" class="brand-logo-gatekeeper">
         <p style="color: #64748b; font-size: 13.5px; line-height: 1.6; margin-top: -6px;">منظومة الذكاء الاصطناعي الخاصة بك. يرجى اختيار وسيلة الدخول للمتابعة:</p>
-
-
         
         <button class="gatekeeper-btn gatekeeper-btn-google" onclick="handleAuth()">
           <svg class="icon-svg icon-white" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
@@ -1385,39 +1398,36 @@
 
     <header>
       <div class="top-bar">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <button class="btn-action" style="padding: 7px 10px;" onclick="toggleSidebar()" title="مكتبة المحادثات">
+        <div class="header-right-side">
+          <button class="btn-action btn-icon-only" onclick="toggleSidebar()" title="مكتبة المحادثات">
             <svg class="icon-svg" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
           </button>
-          <div class="brand-logo-frame">
-            <img src="logo.png" alt="soodye" class="brand-logo-img" oncontextmenu="return false;">
-          </div>
-          <div id="authStatus" class="user-info">
-
-
-            <span>سجّل الدخول لحفظ محادثاتك</span>
-          </div>
+          <img src="logo.png" alt="soodye" class="brand-logo-img">
         </div>
-
+        
         <div class="actions-group">
-          <!-- زر ملء الشاشة أيقونة فقط بتصميم زجاجي -->
+          <div id="authStatus" class="user-info">
+            <span>ضيف</span>
+          </div>
+
+          <!-- زر ملء الشاشة -->
           <button id="fullscreenToggleBtn" class="btn-action btn-icon-only" onclick="toggleAppFullscreen()" title="ملء الشاشة">
             <svg id="fullscreenIcon" class="icon-svg" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
           </button>
 
-          <!-- زر الأخطاء مخفي بالكامل -->
+          <!-- زر الأخطاء مخفي -->
           <button id="errorsBtn" class="btn-action btn-errors" onclick="toggleErrorsModal()" style="display: none;">
             <svg class="icon-svg" style="stroke: #0284c7;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
             <span id="errorsCountText">سجل التشخيص (0)</span>
           </button>
 
-
-
-          <!-- زر تسجيل الدخول والخروج -->
-          <button id="authBtn" class="btn-action" onclick="handleAuth()">
+          <!-- زر تسجيل الدخول والخروج المحسّن كأيقونة/كبسولة أنيقة ومضغوطة -->
+          <button id="authBtn" class="btn-action btn-icon-only" onclick="handleAuth()" title="تسجيل الدخول">
             <svg class="icon-svg" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
-            <span>دخول Google</span>
           </button>
+        </div>
+      </div>
+
         </div>
       </div>
 
@@ -1777,15 +1787,15 @@
           currentUser = user;
           isGuestSession = false;
           sessionStorage.removeItem("soodye_guest_session");
-          const name = user.displayName || user.email || 'مستخدم';
+          const name = user.displayName ? user.displayName.split(' ')[0] : 'مستخدم';
           const photo = user.photoURL ? `<img src="${user.photoURL}" alt="User">` : '';
           authDiv.innerHTML = `${photo} <span>${name}</span>`;
+          authBtn.title = "تسجيل الخروج";
           authBtn.innerHTML = `
           <svg class="icon-svg" style="stroke:#ef4444;" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-          <span>تسجيل الخروج</span>
         `;
 
-          authBtn.className = "btn-action btn-logout";
+          authBtn.className = "btn-action btn-icon-only btn-logout";
           sync.className = "pulse-live";
           sync.innerHTML = '<span class="pulse-dot"></span><span>متصل</span>';
           recordLog("info", "الحساب", `تم تسجيل الدخول: ${name}`);
@@ -1802,15 +1812,16 @@
         } else {
           currentUser = null;
           if (isGuestSession) {
-            authDiv.innerHTML = `<span>👤 وضع الضيف</span>`;
+            authDiv.innerHTML = `<span>👤 ضيف</span>`;
           } else {
-            authDiv.innerHTML = `<span>سجّل الدخول لحفظ محادثاتك</span>`;
+            authDiv.innerHTML = `<span>غير مسجل</span>`;
           }
+          authBtn.title = "تسجيل الدخول عبر Google";
           authBtn.innerHTML = `
           <svg class="icon-svg" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
-          <span>دخول Google</span>
         `;
-          authBtn.className = "btn-action";
+          authBtn.className = "btn-action btn-icon-only";
+
           sync.className = "";
           sync.innerHTML = '<span style="color:#94a3b8; font-size:11px;">⚪ غير متصل</span>';
           document.getElementById("sessionsList").innerHTML = '<div style="font-size: 12px; color: #64748b; padding: 12px; text-align: center;">سجل الدخول لحفظ المحادثات والتبديل بينها</div>';
