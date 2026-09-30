@@ -5,10 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="soodye">
+    <link rel="apple-touch-icon" href="logo.png">
+    <link rel="icon" type="image/png" href="logo.png">
     <meta name="theme-color" content="#f8fafc">
 
+    <!-- مانيتفيست مدمج لتثبيت الموقع كتطبيق أصيل على شاشة الموبايل -->
+    <link rel="manifest" href='data:application/manifest+json,{"name":"soodye AI","short_name":"soodye","start_url":".","display":"standalone","background_color":"#f8fafc","theme_color":"#0284c7","icons":[{"src":"logo.png","sizes":"192x192 512x512","type":"image/png"}]}'>
 
     <title>soodye AI</title>
+
 
     <!-- Firebase SDKs -->
 
@@ -196,6 +203,104 @@
         from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
       }
+
+      /* واجهة المحادثة الجديدة المندمجة والخالية من الإطارات */
+      .new-chat-welcome {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: auto;
+        padding: 30px 20px;
+        text-align: center;
+        gap: 12px;
+        animation: slideUpFade 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        user-select: none;
+      }
+      .new-chat-welcome-icon {
+        width: 56px;
+        height: 56px;
+        stroke: #0284c7;
+        opacity: 0.9;
+        margin-bottom: 4px;
+        filter: drop-shadow(0 4px 12px rgba(2, 132, 199, 0.15));
+      }
+      .new-chat-welcome-title {
+        font-size: 26px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .new-chat-welcome-sub {
+        font-size: 15px;
+        color: #64748b;
+        font-weight: 500;
+        max-width: 320px;
+        line-height: 1.6;
+      }
+
+
+      /* 3 كرات تفكير حرة ومندمجة مباشرة بالخلفية بدون أي مربع نصي */
+      .thinking-standalone-wrapper {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 10px 14px;
+        align-self: flex-end;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        transition: opacity 0.25s ease, transform 0.25s ease;
+      }
+      .thinking-standalone-wrapper .dot {
+        width: 9.5px;
+        height: 9.5px;
+        border-radius: 50%;
+        background: #0284c7;
+        animation: geminiBounce 1.3s infinite ease-in-out both;
+        box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
+      }
+      .thinking-standalone-wrapper .dot:nth-child(1) {
+        background: #0284c7;
+        animation-delay: -0.32s;
+      }
+      .thinking-standalone-wrapper .dot:nth-child(2) {
+        background: #38bdf8;
+        animation-delay: -0.16s;
+      }
+      .thinking-standalone-wrapper .dot:nth-child(3) {
+        background: #0369a1;
+        animation-delay: 0s;
+      }
+      @keyframes geminiBounce {
+        0%, 80%, 100% {
+          transform: translateY(0) scale(0.8);
+          opacity: 0.45;
+        }
+        40% {
+          transform: translateY(-8px) scale(1.2);
+          opacity: 1;
+        }
+      }
+
+      /* أنيميشن دخول مربع الرد فور بدء الكتابة */
+      .msg-appear-anim {
+        animation: scaleUpReveal 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      @keyframes scaleUpReveal {
+        from {
+          opacity: 0;
+          transform: translateY(8px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+
 
 
       /* الأيقونات السمائية الاحترافية */
@@ -1400,6 +1505,92 @@
         backdrop-filter: blur(2px);
         z-index: 100;
       }
+
+      /* نافذة تأكيد الحذف الزجاجية الفاخرة المخصصة لـ soodye */
+      #confirmDeleteModal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        z-index: 999999;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        animation: slideUpFade 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .confirm-delete-card {
+        background: rgba(255, 255, 255, 0.96);
+        border: 1.5px solid #bae6fd;
+        border-radius: 22px;
+        padding: 24px 20px;
+        max-width: 360px;
+        width: 100%;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        box-shadow: 0 20px 40px -10px rgba(2, 132, 199, 0.25);
+      }
+      .confirm-delete-icon-box {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: #fee2e2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ef4444;
+      }
+      .confirm-delete-title {
+        font-size: 16px;
+        font-weight: 800;
+        color: #0f172a;
+      }
+      .confirm-delete-desc {
+        font-size: 13px;
+        color: #64748b;
+        line-height: 1.5;
+        margin-top: -6px;
+      }
+      .confirm-actions-row {
+        display: flex;
+        gap: 10px;
+        width: 100%;
+        margin-top: 4px;
+      }
+      .btn-modal-delete {
+        flex: 1;
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: #ffffff;
+        border: none;
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      }
+      .btn-modal-delete:hover {
+        transform: translateY(-1px);
+      }
+      .btn-modal-cancel {
+        flex: 1;
+        background: #f1f5f9;
+        color: #334155;
+        border: 1px solid #cbd5e1;
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .btn-modal-cancel:hover {
+        background: #e2e8f0;
+      }
+
       #chatsSidebar {
         position: fixed;
         top: 0;
@@ -1737,8 +1928,24 @@
   </div>
 </div>
 
+<!-- نافذة تأكيد حذف المحادثة المنظمة والزجاجية -->
+<div id="confirmDeleteModal">
+  <div class="confirm-delete-card">
+    <div class="confirm-delete-icon-box">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+    </div>
+    <div class="confirm-delete-title">حذف هذه المحادثة؟</div>
+    <div class="confirm-delete-desc">سيتم مسح كافة الرسائل والمرفقات نهائياً والبدء بمحادثة جديدة نظيفة.</div>
+    <div class="confirm-actions-row">
+      <button class="btn-modal-delete" id="confirmDeleteSubmitBtn">حذف المحادثة</button>
+      <button class="btn-modal-cancel" onclick="closeDeleteConfirmModal()">تراجع</button>
+    </div>
+  </div>
+</div>
+
 <!-- نافذة عرض تفاصيل الأخطاء -->
 <div id="errorsModal">
+
   <div class="modal-content">
     <div class="modal-header">
       <strong style="color: #0f172a;">سجل تشخيص الأخطاء والتحويلات</strong>
@@ -2057,18 +2264,38 @@
     }
   }
 
-  // إدارة مكتبة المحادثات
-  function createNewChatSession() {
+  // دالة إظهار واجهة المحادثة الجديدة المندمجة بحجم بارز وبدون إطارات
+  function renderNewChatWelcome() {
+    const chatBox = document.getElementById("chatBox");
+    if (!chatBox) return;
+    chatBox.innerHTML = `
+      <div id="newChatWelcomeNotice" class="new-chat-welcome">
+        <svg class="new-chat-welcome-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <div class="new-chat-welcome-title">أنت في محادثة جديدة</div>
+        <div class="new-chat-welcome-sub">اكتب استفسارك، أو ارفع ملفاً أو صورة للبدء مباشرة</div>
+      </div>
+    `;
+  }
+
+
+  // 3- إدارة مكتبة المحادثات مع إظهار شاشة البداية
+  function createNewChatSession(closeSidebar = true) {
     currentSessionId = "session_" + Date.now();
     localStorage.setItem("active_session_id", currentSessionId);
     conversationHistory = [];
     delete sessionSummaries[currentSessionId];
-    document.getElementById("chatBox").innerHTML = "";
-    toggleSidebar();
+    renderNewChatWelcome();
+    if (closeSidebar) {
+      const sidebar = document.getElementById("chatsSidebar");
+      if (sidebar && sidebar.classList.contains("open")) {
+        toggleSidebar();
+      }
+    }
     loadSessionsList();
     recordLog("info", "جلسة جديدة", "تم فتح محادثة جديدة فارغة");
   }
-
 
   function switchSession(sessionId) {
     if (currentSessionId === sessionId) {
@@ -2082,22 +2309,42 @@
     loadSessionsList();
   }
 
+  // 1- نظام تأكيد الحذف المخصص المنظم بدون رسائل ويب منبثقة
+  let pendingDeleteSessionId = null;
+
+  function closeDeleteConfirmModal() {
+    pendingDeleteSessionId = null;
+    const modal = document.getElementById("confirmDeleteModal");
+    if (modal) modal.style.display = "none";
+  }
+
   function deleteSession(e, sessionId) {
     e.stopPropagation();
     if (!currentUser) return;
-    if (confirm("هل تريد حذف هذه المحادثة بالكامل بما تحتويه من نصوص وصور؟")) {
-      // مسح الجلسة ورسائلها وصورها بالكامل من قاعدة البيانات
-      db.ref(`users/${currentUser.uid}/sessions/${sessionId}`).remove();
-      delete sessionSummaries[sessionId];
-
-      if (currentSessionId === sessionId) {
-        createNewChatSession();
-      } else {
-        loadSessionsList();
-      }
-      showCopyToast("🗑️ تم حذف المحادثة ومرفقاتها بنجاح");
-    }
+    pendingDeleteSessionId = sessionId;
+    const modal = document.getElementById("confirmDeleteModal");
+    if (modal) modal.style.display = "flex";
   }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const confirmBtn = document.getElementById("confirmDeleteSubmitBtn");
+    if (confirmBtn) {
+      confirmBtn.onclick = () => {
+        if (!pendingDeleteSessionId || !currentUser) return;
+        const targetId = pendingDeleteSessionId;
+        closeDeleteConfirmModal();
+
+        db.ref(`users/${currentUser.uid}/sessions/${targetId}`).remove();
+        delete sessionSummaries[targetId];
+
+        // التحويل فوراً لمحادثة جديدة فارغة
+        createNewChatSession(false);
+        showCopyToast("🗑️ تم حذف المحادثة بنجاح");
+      };
+    }
+  });
+
+
 
 
   function loadSessionsList() {
@@ -2131,20 +2378,24 @@
   }
 
   function loadSessionMessages(sessionId) {
-    document.getElementById("chatBox").innerHTML = "";
+    const chatBox = document.getElementById("chatBox");
+    chatBox.innerHTML = "";
     conversationHistory = [];
     if (!currentUser) return;
 
     db.ref(`users/${currentUser.uid}/sessions/${sessionId}/messages`).once("value", snapshot => {
       const data = snapshot.val();
-      if (data) {
+      if (data && Object.keys(data).length > 0) {
         Object.values(data).forEach(item => {
           renderMessage(item.role, item.content, item.modelName);
           conversationHistory.push({ role: item.role, content: item.content });
         });
+      } else {
+        renderNewChatWelcome();
       }
     });
   }
+
 
   function saveMessageToDb(role, content, modelName = "") {
     if (!currentUser) return null;
@@ -2241,9 +2492,9 @@
 
     const contents = safeHistory.map((msg, index) => {
       const isLatest = (index === safeHistory.length - 1 && msg.role === "user");
-      let parts = [{ text: String(msg.content).slice(0, 7000) }];
+      let parts = [{ text: String(msg.content).slice(0, 5000) }];
 
-      // حقن الصورة المضغوطة كبيانات Base64 متطورة للرسالة الأخيرة فقط
+      // حقن الصورة المضغوطة كبيانات Base64 للرسالة الأخيرة فقط
       if (isLatest && msg.attachedImage) {
         parts.unshift({
           inlineData: {
@@ -2259,7 +2510,14 @@
       };
     });
 
-    const bodyData = { contents };
+    const bodyData = { 
+      contents,
+      generationConfig: {
+        temperature: 0.6,
+        maxOutputTokens: 2048
+      }
+    };
+
 
 
 
@@ -2384,11 +2642,16 @@
 
     }
 
+    const groqKey = (KEYS.GROQ || "").trim();
+    if (!groqKey) {
+      throw new Error("مفتاح Groq غير متوفر أو غير محدد");
+    }
+
     const res = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${KEYS.GROQ}`
+        "Authorization": `Bearer ${groqKey}`
       },
       body: JSON.stringify({
         model: item.model,
@@ -2399,6 +2662,7 @@
       }),
       signal
     });
+
 
 
     if (!res.ok) {
@@ -2920,55 +3184,73 @@
     const wrapper = document.createElement("div");
     wrapper.className = "msg-wrapper ai";
 
+    // عنصر كرات التفكير المستقل تماماً على الخلفية بدون أي إطار أو صندوق
+    const thinkingEl = document.createElement("div");
+    thinkingEl.className = "thinking-standalone-wrapper";
+    thinkingEl.innerHTML = `
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    `;
+    wrapper.appendChild(thinkingEl);
+
+    let metaSpan = null;
     if (metaName) {
-      const metaSpan = document.createElement("span");
+      metaSpan = document.createElement("span");
       metaSpan.className = "meta";
       metaSpan.innerText = metaName;
+      metaSpan.style.display = "none"; // إخفاء العنوان أثناء التفكير
       wrapper.appendChild(metaSpan);
     }
 
+    // مربع الرد (مخفي أثناء التفكير ويظهر فور بدء الكتابة بأنيميشن)
     const msgDiv = document.createElement("div");
-    msgDiv.className = "msg typing-cursor";
+    msgDiv.className = "msg typing-cursor msg-appear-anim";
+    msgDiv.style.display = "none";
     wrapper.appendChild(msgDiv);
+
     chatBox.appendChild(wrapper);
     chatBox.scrollTop = chatBox.scrollHeight;
 
-    // محرك تحريك وتفريغ الكلمات فائق السرعة
-    let targetFullText = "";
-    let displayedLength = 0;
-    let animationTimer = null;
-
-    function step() {
-      if (displayedLength < targetFullText.length) {
-        // ضخ من 3 إلى 6 أحرف دفعة واحدة كل 8 ميلي ثانية للحفاظ على السرعة الفائقة وظهور تأثير الطباعة الحية
-        const stepSize = Math.max(3, Math.ceil((targetFullText.length - displayedLength) / 8));
-        displayedLength = Math.min(targetFullText.length, displayedLength + stepSize);
-        msgDiv.innerText = targetFullText.slice(0, displayedLength);
-        smartScroll(chatBox);
-        animationTimer = setTimeout(step, 8);
-      } else {
-        animationTimer = null;
-      }
-    }
+    let hasStartedWriting = false;
+    let renderThrottle = null;
 
     const pushChunk = (newText) => {
-      targetFullText = newText;
-      if (!animationTimer) {
-        step();
+      // إزالة كرات التفكير وإظهار مربع الشات فور خروج أول حرف
+      if (!hasStartedWriting) {
+        hasStartedWriting = true;
+        thinkingEl.remove();
+        if (metaSpan) metaSpan.style.display = "flex";
+        msgDiv.style.display = "block";
+      }
+
+      if (!renderThrottle) {
+        renderThrottle = requestAnimationFrame(() => {
+          msgDiv.innerHTML = cleanAndFormatMarkdown(newText);
+          smartScroll(chatBox);
+          renderThrottle = null;
+        });
       }
     };
 
     const finalize = () => {
-      if (animationTimer) {
-        clearTimeout(animationTimer);
-        animationTimer = null;
+      if (!hasStartedWriting) {
+        thinkingEl.remove();
+        if (metaSpan) metaSpan.style.display = "flex";
+        msgDiv.style.display = "block";
       }
-      displayedLength = targetFullText.length;
+      if (renderThrottle) {
+        cancelAnimationFrame(renderThrottle);
+        renderThrottle = null;
+      }
       msgDiv.classList.remove("typing-cursor");
     };
 
     return { msgDiv, chatBox, wrapper, pushChunk, finalize };
   }
+
+
+
 
 
 
@@ -3266,8 +3548,15 @@
     input.value = "";
     clearCurrentAttachment();
 
+    // إخفاء لافتة "محادثة جديدة" فور إرسال أول رسالة
+    const welcomeNotice = document.getElementById("newChatWelcomeNotice");
+    if (welcomeNotice) {
+      welcomeNotice.remove();
+    }
+
     // إعداد واجهة ظهور رسالة المستخدم مع بطاقة المرفق إن وجد
     let displayMessage = prompt;
+
     if (activeAttachment) {
       if (activeAttachment.type === "image") {
         displayMessage = `<div style="margin-bottom:8px;"><img src="${activeAttachment.dataUrl}" style="max-width:180px; max-height:160px; border-radius:10px; border:1px solid rgba(255,255,255,0.4); display:block;" /></div>${prompt}`;
@@ -3332,11 +3621,15 @@
     conversationHistory.push(historyItem);
     lastUserDbKey = saveMessageToDb("user", displayMessage);
 
+    // تشغيل توليد العنوان في الخلفية بعد ثانية حتى تبدأ إجابة الذكاء الاصطناعي أولاً وبدون أي تأخير
     if (conversationHistory.length <= 1 && currentUser) {
-      generateSmartSessionTitle(prompt, currentSessionId);
+      setTimeout(() => {
+        generateSmartSessionTitle(prompt, currentSessionId);
+      }, 1500);
     }
 
     const currentPayloadHistory = [...conversationHistory];
+
     currentPayloadHistory[currentPayloadHistory.length - 1] = { 
       role: "user", 
       content: finalPayloadContent,
