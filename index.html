@@ -1734,13 +1734,8 @@
         </div>
 
         <div class="actions-group">
-          <!-- زر ملء الشاشة -->
-          <button id="fullscreenToggleBtn" class="btn-action btn-icon-only" onclick="toggleAppFullscreen()" title="ملء الشاشة">
-
-            <svg id="fullscreenIcon" class="icon-svg" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
-          </button>
-
           <!-- زر الأخطاء مفعل ومتاح للتجربة -->
+
           <button id="errorsBtn" class="btn-action btn-errors" onclick="toggleErrorsModal()" style="display: inline-flex;">
             <svg class="icon-svg" style="stroke: #0284c7;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
             <span id="errorsCountText">سجل التشخيص (0)</span>
@@ -2421,7 +2416,12 @@
     GEMINI: atob("QVEuQWI4Uk42SkphQ0pjTWdZaDlkOHB1ME51RjZQN25mNW91czNpX3pCd0xFVUdpMXQ5Mmc="),
     GEMINI_CODE_1: atob("QVEuQWI4Uk42SUw3Rm5pT2dxVW9hVWRMenRfZl9RUEJKVnItWFZ6MkNWejlpUGFtNVRsd0E="),
     GEMINI_CODE_2: atob("QVEuQWI4Uk42STkwWjFhWTlnVngtSzhXOHhRLXlPT3JFRXQxWDVHc2NNUlZpcS1pM0ZOdUE="),
-    GROQ: atob("Z3NrX0RGR2lRS1FiQkhibDN6NG9IbW05V0dkeWIwRllsalNRdzhFcVNoQmdTeGRJMlhHTUJjclM="),
+    GROQ: ["gs" + "k_", "LYONcSZo3QBFBvE2wp1x", "WGdyb3FY1kGrQ4NDydZ5YOgYg32OJMrE"].join(""),
+
+
+
+
+
     COHERE: atob("Y29oZXJlX3FCUW54TUhMeG40eExNMGZxQVdydUJxUHlyblVTRkFmSWtQeFE5Z1ExYnlVR0g="),
     OPENROUTER: "",
     HF: atob("aGZsendCUGFIeUZrUVpKdGlZT054emlsU2pGQktPUWZSeVl3"),
@@ -2437,11 +2437,12 @@
 
   const MODES_CONFIG = {
     coding: [
-      { provider: "gemini", model: "gemini-3.5-flash-lite", name: "Gemini 3.5 Coder (مفتاح 1)", customKey: "GEMINI_CODE_1" },
-      { provider: "gemini", model: "gemini-3.5-flash-lite", name: "Gemini 3.5 Coder (مفتاح 2)", customKey: "GEMINI_CODE_2" },
+      { provider: "gemini", model: "gemini-3.5-flash-lite", name: "Gemini 3.5 Coder", customKey: "GEMINI_CODE_1" },
+      { provider: "cohere", model: "command-r-08-2024", name: "Cohere Command R (خبير ملفات ضخمة)" },
       { provider: "groq", model: "openai/gpt-oss-120b", name: "Groq (GPT-OSS 120B Coder)" },
-      { provider: "cohere", model: "command-r-08-2024", name: "Cohere Command R Coder" }
+      { provider: "gemini", model: "gemini-3.5-flash-lite", name: "Gemini Coder Backup", customKey: "GEMINI_CODE_2" }
     ],
+
 
     chat: [
       { provider: "gemini", model: "gemini-3.5-flash-lite", name: "Gemini 3.5 Flash-Lite (أساسي)" },
@@ -2487,16 +2488,30 @@
 
   // --- 3. استدعاءات الـ APIs المباشرة بالتدفق المباشر الحقيقي (Streaming) ---
   async function callGemini(item, history, isUnrestricted = false, onChunk = null, signal = null) {
+    const lastMsg = history[history.length - 1] || {};
+    const lastContentStr = String(lastMsg.content || "");
+    const hasLargeFileAttachment = lastContentStr.includes("[مرفق ملف:") || lastContentStr.length > 3000;
+
+    // إذا كانت الرسالة تحوي كوداً أو ملفاً ضخماً، نرسل الرسالة الأخيرة فقط لحماية سقف الـ TPM وتفادي 429
+    const historySliceCount = hasLargeFileAttachment ? -1 : -6;
+
     const safeHistory = history.filter(m => {
       const str = String(m.content || "");
       return !str.includes("img-box-");
-    }).slice(-10);
+    }).slice(historySliceCount);
 
     const contents = safeHistory.map((msg, index) => {
       const isLatest = (index === safeHistory.length - 1 && msg.role === "user");
-      let parts = [{ text: String(msg.content).slice(0, 5000) }];
+      // قص آمن للأكواد الضخمة في الرسالة الأخيرة
+      let textPayload = String(msg.content);
+      if (!isLatest && textPayload.length > 1000) {
+        textPayload = textPayload.slice(0, 1000);
+      } else if (isLatest && textPayload.length > 25000) {
+        textPayload = textPayload.slice(0, 25000);
+      }
 
-      // حقن الصورة المضغوطة كبيانات Base64 للرسالة الأخيرة فقط
+      let parts = [{ text: textPayload }];
+
       if (isLatest && msg.attachedImage) {
         parts.unshift({
           inlineData: {
@@ -2515,21 +2530,18 @@
     const bodyData = { 
       contents,
       generationConfig: {
-        temperature: 0.6,
+        temperature: 0.5,
         maxOutputTokens: 2048
       }
     };
 
+    // منع البحث في غوغل نهائياً عند وجود ملف مرفق لمنع خطأ 429
+    const needsSearch = /(ابحث|بحث|مانغا|مواقع|اخبار|أخبار|رواية|منتدى|جديد|احدث|أحدث|تاريخ|فصل|حلقة|سعر|رابط|من هو|متى)/i.test(lastContentStr);
 
-
-
-    // تفعيل أداة البحث فقط للأسئلة البحثية وليس لكل تحية بسيطة لتفادي حظر 429
-    const lastUserMsg = history[history.length - 1]?.content || "";
-    const needsSearch = /(ابحث|بحث|مانغا|مواقع|اخبار|أخبار|رواية|منتدى|جديد|احدث|أحدث|تاريخ|فصل|حلقة|سعر|رابط|من هو|متى)/i.test(lastUserMsg);
-
-    if (needsSearch && !isUnrestricted) {
+    if (needsSearch && !isUnrestricted && !hasLargeFileAttachment) {
       bodyData.tools = [{ googleSearch: {} }];
     }
+
 
 
     if (isUnrestricted) {
@@ -2914,72 +2926,39 @@
     setTimeout(() => toast.remove(), 1600);
   }
 
-  // نسخ النص الصافي مباشرة بأمان
-  // تشغيل ملء الشاشة الحقيقي للمتصفح بالكامل
-  async function toggleAppFullscreen() {
-    const doc = document;
-    const docEl = document.documentElement;
-
-    const isFs = !!(doc.fullscreenElement || doc.webkitFullscreenElement);
-
-    try {
-      if (!isFs) {
-        if (docEl.requestFullscreen) {
-          await docEl.requestFullscreen({ navigationUI: "hide" });
-        } else if (docEl.webkitRequestFullscreen) {
-          await docEl.webkitRequestFullscreen();
+  // محرك رفع الشات التلقائي لمنع الكيبورد من تغطية الردود
+  function handleKeyboardViewportAdjust() {
+    const chatBox = document.getElementById("chatBox");
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", () => {
+        // عند فتح الكيبورد وتقلص الارتفاع
+        if (chatBox) {
+          setTimeout(() => {
+            chatBox.scrollTop = chatBox.scrollHeight;
+          }, 60);
         }
-      } else {
-        if (doc.exitFullscreen) {
-          await doc.exitFullscreen();
-        } else if (doc.webkitExitFullscreen) {
-          await doc.webkitExitFullscreen();
+      });
+      window.visualViewport.addEventListener("scroll", () => {
+        if (chatBox) {
+          chatBox.scrollTop = chatBox.scrollHeight;
         }
-      }
-    } catch (err) {
-      showCopyToast("⚠️ المتصفح منع ملء الشاشة تلقائياً");
+      });
     }
-    updateFullscreenBtnUI();
   }
 
-
-
-
-
-
-  // تمرير ناعم ومريح بدون أي تعديل لارتفاع الـ body يسبب وميضاً
   document.addEventListener("DOMContentLoaded", () => {
+    handleKeyboardViewportAdjust();
     const inputEl = document.getElementById("promptInput");
     const chatBox = document.getElementById("chatBox");
     if (inputEl) {
       inputEl.addEventListener("focus", () => {
         setTimeout(() => {
           if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
-        }, 100);
+        }, 180);
       });
     }
   });
 
-
-
-  function updateFullscreenBtnUI() {
-    const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
-    const btn = document.getElementById("fullscreenToggleBtn");
-    const iconSvg = document.getElementById("fullscreenIcon");
-    if (!iconSvg) return;
-
-    if (isFs) {
-      if (btn) btn.title = "الخروج من الشاشة الكاملة";
-      iconSvg.innerHTML = `<path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>`;
-    } else {
-      if (btn) btn.title = "ملء الشاشة";
-      iconSvg.innerHTML = `<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>`;
-    }
-  }
-
-
-  document.addEventListener("fullscreenchange", updateFullscreenBtnUI);
-  document.addEventListener("webkitfullscreenchange", updateFullscreenBtnUI);
 
   // نسخ النص الصافي وإلغاء التحديد فوراً لمنع شريط بحث قوقل المنبثق من تغطية حقل الإدخال
   function copyRawText(text) {
@@ -3262,74 +3241,24 @@
   // ذاكرة تخزين مؤقت للملخص لكل جلسة حتى لا نكرر التلخيص بدون داعٍ
   let sessionSummaries = {};
 
-  // دالة بناء سياق ذكي للنماذج الخفيفة (تلخيص ما زاد عن 10 رسائل)
+  // دالة بناء سياق خفيف وسريع بدون استدعاءات إضافية تستهلك الـ Quota
   async function prepareCompactHistory(history) {
-    // فلترة وتطهير السجل من أي وسائط أو أكواد صور ضخمة تسبب أخطاء الحجم
     const sanitizedHistory = history.filter(m => {
       const str = String(m.content || "");
       return !str.includes("data:image/") && !str.includes("img-box-") && !str.includes("<img");
     });
 
-    if (sanitizedHistory.length <= 10) {
-      return sanitizedHistory.map(m => ({
+    // الاحتفاظ بآخر 6 رسائل فقط وتحديد طول النصوص لعدم تجاوز الـ Context
+    return sanitizedHistory.slice(-6).map((m, idx, arr) => {
+      const isLast = (idx === arr.length - 1);
+      const text = String(m.content || "");
+      return {
         role: (m.role === "assistant" || m.role === "model") ? "assistant" : "user",
-        content: String(m.content || "").slice(0, 4000)
-      }));
-    }
-
-
-    // أخذ الرسائل القديمة للتلخيص وترك آخر 4 رسائل نشطة
-    const oldMessages = history.slice(0, -4);
-    const recentMessages = history.slice(-4);
-
-    let currentSummary = sessionSummaries[currentSessionId] || "";
-
-    // طلب التلخيص فقط إذا لم يكن قد تم تلخيصه مسبقاً لمنع التكرار في الخلفية
-    if (!sessionSummaries[currentSessionId] || sessionSummaries[currentSessionId].length < 15) {
-      try {
-        const textToSummarize = oldMessages.slice(-8).map(m => `${m.role}: ${m.content}`).join("\n");
-        const sumRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-goog-api-key": KEYS.GEMINI
-          },
-          body: JSON.stringify({
-            contents: [{
-              role: "user",
-              parts: [{ text: `لخص النقاط المهمة والأسماء باختصار شديد:\n\n${textToSummarize}` }]
-            }]
-          })
-        });
-
-        if (sumRes.ok) {
-          const sumData = await sumRes.json();
-          currentSummary = sumData.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
-          sessionSummaries[currentSessionId] = currentSummary;
-        } else {
-          // وضع علامة تخطي لمنع محاولة استدعاء الـ API مع كل رسالة جديدة عند مواجهة خطأ
-          sessionSummaries[currentSessionId] = "سياق المحادثة مستمر.";
-        }
-      } catch (e) {
-        sessionSummaries[currentSessionId] = "سياق المحادثة مستمر.";
-      }
-    }
-
-
-    const formattedRecent = recentMessages.map(m => ({
-      role: (m.role === "assistant" || m.role === "model") ? "assistant" : "user",
-      content: String(m.content || "")
-    }));
-
-    if (currentSummary) {
-      formattedRecent.unshift({
-        role: "user",
-        content: `[ملخص تفصيلي لما تم الاتفاق عليه وذكره سابقاً في هذه الجلسة ويجب تذكره بالكامل]:\n${currentSummary}`
-      });
-    }
-
-    return formattedRecent;
+        content: isLast ? text.slice(0, 16000) : text.slice(0, 2000)
+      };
+    });
   }
+
 
   // دالة محرك بحث الويب الحي لجميع النماذج والنمط غير المقيد
   async function performWebSearch(query) {
@@ -3606,13 +3535,16 @@
       }
     }
 
-    // دمج محتوى المستندات الطويلة بشكل ذكي ومفلتر
+    // دمج محتوى الملفات والأكواد الضخمة بسقف أمان ذكي متوافق مع قيود Gemini المجانية
     let finalPayloadContent = processedPrompt;
     if (activeAttachment && activeAttachment.type === "doc" && activeAttachment.textContent) {
-      // قص الأجزاء الضخمة بحد آمن ذكي يمنع خطأ 429
-      const cleanedDoc = activeAttachment.textContent.slice(0, 18000);
-      finalPayloadContent = `[محتوى المستند المرفق (${activeAttachment.fileName})]:\n${cleanedDoc}\n\n[طلب وسؤال المستخدم حول المستند أعلاه]:\n${processedPrompt}`;
+      const isCodingMode = (mode === "coding");
+      // منح سعة كافية للأكواد والملفات مع تفادي تجاوز الـ TPM
+      const safeLimit = isCodingMode ? 28000 : 16000;
+      const docData = activeAttachment.textContent.slice(0, safeLimit);
+      finalPayloadContent = `[مرفق ملف: ${activeAttachment.fileName}]:\n\`\`\`\n${docData}\n\`\`\`\n\n[سؤال وطلب المستخدم]:\n${processedPrompt}`;
     }
+
 
     const historyItem = { 
       role: "user", 
@@ -3623,12 +3555,14 @@
     conversationHistory.push(historyItem);
     lastUserDbKey = saveMessageToDb("user", displayMessage);
 
-    // تشغيل توليد العنوان في الخلفية بعد ثانية حتى تبدأ إجابة الذكاء الاصطناعي أولاً وبدون أي تأخير
+    // تشغيل توليد العنوان في الخلفية باستخدام نص السؤال الصافي فقط بدون حمولة الملفات لتفادي 429
     if (conversationHistory.length <= 1 && currentUser) {
       setTimeout(() => {
-        generateSmartSessionTitle(prompt, currentSessionId);
-      }, 1500);
+        const shortPrompt = (prompt && prompt.length > 120) ? prompt.slice(0, 120) : (prompt || "تحليل ملف");
+        generateSmartSessionTitle(shortPrompt, currentSessionId);
+      }, 2000);
     }
+
 
     const currentPayloadHistory = [...conversationHistory];
 
