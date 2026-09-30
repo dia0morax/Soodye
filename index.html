@@ -306,19 +306,23 @@
         z-index: 10;
       }
       .top-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-      /* دمج الشعار بالخلفية بدون أي إطار أو حدود نهائياً */
+      /* دمج الشعار بالخلفية وتكبيره ليظهر بوضوح وفخامة */
       .brand-logo-img {
-        height: 32px;
+        height: 44px;
+        max-width: 140px;
         width: auto;
         object-fit: contain;
         display: block;
         mix-blend-mode: multiply; /* إخفاء الخلفية البيضاء ودمج الرسم بالخلفية */
+        transform: scale(1.15); /* إبراز التفاصيل وقص الحواف الفارغة */
+        transform-origin: right center;
         user-select: none !important;
         -webkit-user-select: none !important;
         -webkit-user-drag: none !important;
         -webkit-touch-callout: none !important;
         pointer-events: none !important;
       }
+
       .brand-logo-gatekeeper {
         height: 70px;
         width: auto;
@@ -1361,9 +1365,11 @@
     <div id="gatekeeperOverlay">
       <div class="gatekeeper-card">
         <img src="logo.png" alt="soodye" class="brand-logo-gatekeeper">
-        <p style="color: #64748b; font-size: 13.5px; line-height: 1.6; margin-top: -6px;">منظومة الذكاء الاصطناعي الخاصة بك. يرجى اختيار وسيلة الدخول للمتابعة:</p>
+        <div style="font-size: 16px; font-weight: 700; color: #0284c7; line-height: 1.5;">هلا يبوي، سودي لديكم لا خوف عليكم.</div>
+        <p style="color: #64748b; font-size: 12.5px; margin-top: -8px;">يرجى اختيار وسيلة الدخول للمتابعة:</p>
         
         <button class="gatekeeper-btn gatekeeper-btn-google" onclick="handleAuth()">
+
           <svg class="icon-svg icon-white" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
           <span>تسجيل الدخول عبر Google</span>
         </button>
