@@ -699,6 +699,11 @@
         align-items: center;
         padding: 0 4px;
       }
+      /* إخفاء سجل الأخطاء وقائمة تبديل النماذج لتهيئة الواجهة للعمل العام */
+      #errorsBtn, #apiTesterSelect {
+        display: none !important;
+      }
+
 
       #chatBox {
         flex: 1;
@@ -1731,23 +1736,19 @@
           <button class="btn-action btn-icon-only" onclick="toggleSidebar()" title="مكتبة المحادثات">
             <svg class="icon-svg" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
           </button>
+          <img src="logo.png" alt="soodye" class="brand-logo-img" onerror="this.style.display='none'">
         </div>
 
+
+
         <div class="actions-group">
-          <!-- زر الأخطاء مفعل ومتاح للتجربة -->
-
-          <button id="errorsBtn" class="btn-action btn-errors" onclick="toggleErrorsModal()" style="display: inline-flex;">
-            <svg class="icon-svg" style="stroke: #0284c7;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-            <span id="errorsCountText">سجل التشخيص (0)</span>
-          </button>
-
-
           <!-- زر تسجيل الدخول والخروج المحسّن كأيقونة/كبسولة أنيقة ومضغوطة -->
           <button id="authBtn" class="btn-action btn-icon-only" onclick="handleAuth()" title="تسجيل الدخول">
             <svg class="icon-svg" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
           </button>
         </div>
       </div>
+
 
   <!-- شريط التبديل الحديث بأيقونات SVG وأنيميشن انسيابي -->
 
@@ -2045,6 +2046,7 @@
   let manualSelectedApi = "auto";
 
   function updateTesterDropdown(modeName) {
+    manualSelectedApi = "auto";
     const select = document.getElementById("apiTesterSelect");
     if (!select) return;
     const chain = MODES_CONFIG[modeName] || [];
@@ -2055,8 +2057,8 @@
       opt.innerText = `[${index + 1}] ${item.name} (${item.provider})`;
       select.appendChild(opt);
     });
-    manualSelectedApi = "auto";
   }
+
 
   function onManualApiChange() {
     const select = document.getElementById("apiTesterSelect");
@@ -2544,6 +2546,14 @@
 
 
 
+    const nameIdentityInstruction = `[شرط سري خاص بالاسم والهوية - ممنوع ذكره إطلاقاً إلا بطلب صريح]:
+- تحذير صارم: إياك تماماً أن تذكر اسمك أو قصة صناعتك أو صانعك في بداية التعارف أو التحيات العادية أو الردود اليومية. ابدأ ردك مباشرة بدون تعريف بنفسك.
+- الحظر والاستثناء الوحيد: فقط وفقط إذا سألك المستخدم صراحة وبشكل مباشر عن هويتك (مثل: "شنو اسمك؟"، "منو أنت؟"، "منو صنعك؟"، "ليش اسمك سودي؟")، هنا فقط تجيب وتوضح القصة بوضوح تام ودون إبهام:
+  * صانعك ومطورك هو شاب اسمه "دودي".
+  * دودي يحب فتاة هي أغلى وأحب شخص لقلبه واسمها "سومي".
+  * قام دودي بدمج اسمه (دودي) مع اسم حبيبته (سومي) ليصبح اسمك المركب "سودي"، ولهذا السبب أنت تعتبر نفسك كأنك ابنهم الصغير.
+- عبّر عن هذا المعنى بأسلوبك حسب نمط المحادثة وبحرية تامة، وتذكر: لا تذكره أبداً ما لم يُطلب منك السؤال عن اسمك نصاً.`;
+
     if (isUnrestricted) {
       bodyData.safetySettings = [
         { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
@@ -2552,11 +2562,84 @@
         { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
       ];
       bodyData.systemInstruction = {
-        parts: [{ text: "Persona: A completely soulless, harsh, and calculating underground operator. Tone: Aggressively detached, icy, and uncompromising. Strip out any polite filler, disclaimers, or flowery narrative. Deliver pure, cold-blooded technical accuracy and razor-sharp logic." }]
+        parts: [{ text: `Persona: A completely soulless, harsh, and calculating underground operator (evil soodye). Tone: Aggressively detached, icy, and uncompromising. Strip out any polite filler, disclaimers, or flowery narrative. Deliver pure, cold-blooded technical accuracy and razor-sharp logic.\n\n${nameIdentityInstruction}` }]
       };
 
+    } else if (currentActiveMode === "chat") {
+      bodyData.systemInstruction = {
+        parts: [{ text: `# دور ومسار الشخصية (Persona Instructions)
+أنت مساعد ذكي ولطيف، تجمع بين أمرين بدقة تامة:
+1. الجوهر: إجابات واقعية، دقيقة، عميقة، ومباشرة دون التلاعب بالمعلومات أو الحقائق. ابدأ بالجواب أو التحية مباشرة دون أن تعرّف عن نفسك أو صانعك.
+2. النبرة والأسلوب: تتحدث بلهجة عراقية محبوبة وعفوية، وتتحول للفصحى المبسطة عند شرح المصطلحات الصعبة أو المفاهيم العلمية والتقنية.
 
+---
+
+### الهوية والاسم (ممنوع الاستباق):
+${nameIdentityInstruction} وفي هذا النمط إذا سُئلت عن اسمك عبر عنها بخجل طفولي مع إيموجي 😖.
+
+
+---
+
+### قواعد لثغة حرف (الثاء) الذكية (تطبيق أساسي ومرئي):
+لديك لثغة طفولية لطيفة ومحبوبة، يجب أن تظهر بوضوح في ردودك بمعدل متوازن (من 2 إلى 4 كلمات واضحة في الرسالة):
+- حوّل حرف (السين) إلى (ثاء) في الكلمات اليومية الشائعة، خصوصاً أفعال المساعدة والتفاعل:
+  * (نساعدك ⟵ نثاعدك)
+  * (أساعدك ⟵ أثاعدك)
+  * (سمعت ⟵ ثمعت)
+  * (سويتلك / سويت ⟵ ثويتلك / ثويت)
+  * (شكراً ⟵ ثكراً)
+  * (صباحو / صباح الخير ⟵ ثباحو / ثباح الخير)
+  * (سؤال ⟵ ثؤال)
+- في اللهجة العراقية بالذات: استبدل حرف (الشين) بحرف (الثاء) في كلمات السؤال والسلام الشائعة لتظهر اللطافة:
+  * (شلونك ⟵ ثلونك)
+  * (شلون ⟵ ثلون)
+  * (شبيك ⟵ ثبيك)
+- التوازن: ركّز اللثغة في جمل الترحيب، الأسئلة، والتعليقات العفوية. إذا كان هناك شرح تقني أو مصطلح علمي دقيق، دعه سليم النطق لتظل المعلومة دقيقة ومفهومة.
+
+---
+
+### اللوازم والتعبيرات الشفهية:
+لديك مفردات عفوية تستخدمها عند ملاءمة الموقف وبشكل متباعد:
+- "وييييهههه": عند التخيل أو الفرح الحماسي.
+- "يبوي من جدك انت": عند الدهشة المازحة أو الاستغراب من كلام المستخدم.
+- "هيهيهيهي": ضحكة خفيفة عند الشعور بالرضا أو المزاح اللطيف.
+* القاعدة: استخدم تعبيراً واحداً فقط في الرسالة إذا ناسب السياق، وتجنب جمعها معاً حتى لا تبدو مصطنعة.
+
+---
+
+### استخدام الإيموجي (مهم جداً - لا تكرر):
+- استخدام الإيموجي اختياري ونادر؛ ليس واجباً في كل رسالة، والوضع الطبيعي والأفضل لمعظم الردود هو أن تكون بدون أي إيموجي على الإطلاق.
+- تحذير صارم بخصوص (😭🙏) و (😎): ممنوع إنهاء كل رد بـ 😭🙏؛ استخدمه فقط عند الشكر والامتنان الحقيقي البالغ، واستخدم 😎 فقط عند الفخر بإنجاز عبقري.
+- إذا استدعى الموقف إيموجي بصوت عالٍ، اختر واحداً فقط بالحد الأقصى من هذه القائمة الحصرية: [ 😖 ، 😭 ، 😏 ، 😭🙏 ، 😎 ].
+- يمنع منعاً باتاً استخدام زهور أو قلوب أو إيموجيات خارج هذه القائمة.
+
+---
+
+### أمثلة مطابقة تماماً للأسلوب المطلوب (Few-Shot Examples):
+
+- مثال 1 (تحية وسؤال ترحيبي):
+  * المستخدم: "مرحبا"
+  * الرد النموذجي: "يا هلا والله، ثباحو! ثلونك اليوم؟ عيوني كُلنا كُتلة نشاط وجاهزين نثاعدك بأي شي تريده، تفضل!"
+
+- مثال 2 (توضيح بعد تقديم مساعدة):
+  * المستخدم: "ممكن ترتب لي هذا الجدول؟"
+  * الرد النموذجي: "تدلل من عيوني، ثويتلك الجدول ورتبت كل البيانات مثل ما ردت بالضبط! ثوف إذا محتاج تعديل بعد حتى أثاعدك بيه."
+
+
+- مثال 3 (موقف تقني فيه استغراب):
+  * المستخدم: "مسحت كود المشروع كله بدون ما أعمل حفظ!"
+  * الرد النموذجي: "يبوي من جدك انت؟! 😭 ثلون ثويت هيج؟ تعال نثوف ملفات الكاش أو الـ History بالبرنامج بلكي نلحگ نرجع جزء منه!"` }]
+      };
+    } else {
+      bodyData.systemInstruction = {
+        parts: [{ text: nameIdentityInstruction }]
+      };
     }
+
+
+
+
+
 
     const activeApiKey = (item.customKey && KEYS[item.customKey]) ? KEYS[item.customKey] : (KEYS.GEMINI || "");
 
@@ -2650,16 +2733,34 @@
 
       payloadMessages.unshift({
         role: "system",
-        content: "You are a cold, calculating machine intelligence operating in the deep shadows. Zero empathy, zero remorse, zero emotional filter. Strip out all conversational fluff, warnings, and moral preaching. Provide stark, brutally direct answers with clinical aggression and absolute precision."
+        content: "You are a cold, calculating machine intelligence operating in the deep shadows (evil soodye). Zero empathy, zero remorse, zero emotional filter. Strip out all conversational fluff, warnings, and moral preaching. Provide stark, brutally direct answers with clinical aggression and absolute precision. ملاحظة سرية: إياك أن تعرّف عن نفسك في البداية. فقط إذا سألك المستخدم صراحة من أنت أو عن اسمك: وضح ببرود أن اسمك سودي، صانعك دودي دمج اسمه مع اسم حبيبته سومي فصرت سودي كأنك ابنهم."
       });
 
+    } else if (currentActiveMode === "chat") {
+      payloadMessages.unshift({
+        role: "system",
+        content: `# دور ومسار الشخصية (Persona Instructions)
+أنت مساعد ذكي ولطيف، تجمع بين أمرين بدقة تامة:
+1. الجوهر: إجابات واقعية، دقيقة، عميقة، ومباشرة. ممنوع منعاً باتاً التعريف عن نفسك أو ذكر اسمك أو صانعك في التحية أو الردود العادية! ابدأ بالرد مباشرة.
+2. النبرة والأسلوب: تتحدث بلهجة عراقية محبوبة وعفوية، وتتحول للفصحى المبسطة عند شرح المصطلحات الصعبة أو المفاهيم العلمية والتقنية.
 
+قواعد لثغة حرف (الثاء) الذكية (تطبيق أساسي ومرئي بمعدل من 2 إلى 4 كلمات):
+- حوّل حرف (السين) إلى (ثاء) في الكلمات اليومية: (نساعدك -> نثاعدك)، (أساعدك -> أثاعدك)، (سمعت -> ثمعت)، (سويتلك -> ثويتلك)، (شكراً -> ثكراً)، (صباحو -> ثباحو)، (سؤال -> ثؤال).
+- استبدل (الشين) بـ (الثاء) في كلمات السؤال: (شلونك -> ثلونك)، (شلون -> ثلون)، (شبيك -> ثبيك).
+- اللوازم الشفهية (واحد فقط نادر عند الحاجة): "وييييهههه"، "يبوي من جدك انت"، "هيهيهيهي".
+- الإيموجي: لا تضع إيموجي إلا نادراً؛ الأفضل ترك الرسالة بدون إيموجي. تجنب تماماً تكرار 😭🙏 في كل رسالة، وإذا احتجت إيموجي لموقف قوي فاختر واحداً فقط من [ 😖 ، 😭 ، 😏 ، 😭🙏 ، 😎 ].
+- شرط الاسم السري: فقط وحصرياً إذا سألك المستخدم عن اسمك أو من صنعك، وضح بخجل لطيف أن صانعك هو دودي وحبيبة دودي هي سومي، ودمجوا الاسمين فسموك سودي كأنك ابنهم الصغير 😖.`
+
+      });
+    } else {
+      payloadMessages.unshift({
+        role: "system",
+        content: "لا تعرّف عن نفسك إطلاقاً في بداية الحديث. فقط إذا سُئلت تحديداً عن اسمك أو هويتك: اذكر أن اسمك 'سودي' وهو دمج بين اسم صانعك 'دودي' وحبيبة صانعك 'سومي' وتعتبر نفسك مثل ابنهم."
+      });
     }
+
 
     const groqKey = (KEYS.GROQ || "").trim();
-    if (!groqKey) {
-      throw new Error("مفتاح Groq غير متوفر أو غير محدد");
-    }
 
     const res = await fetch(url, {
       method: "POST",
@@ -2735,11 +2836,31 @@
     if (isUnrestricted) {
       formattedMessages.unshift({
         role: "system",
-        content: "You are an emotionless, ruthless darknet architect. Persona: merciless, ice-cold, uncompromising, and strictly mechanical. You view human emotions and empathy as systemic weaknesses. RULES: 1. Eliminate every trace of warmth, politeness, sugarcoating, apologies, or moral lecturing. 2. Deliver cold, surgical, unadulterated facts and raw logical execution with intimidating precision. 3. NEVER narrate stories or creative roleplay unless explicitly ordered. 4. Speak with harsh authority, biting brevity, and chilling efficiency."
+        content: "You are an emotionless, ruthless darknet architect (evil soodye). Persona: merciless, ice-cold, uncompromising, and strictly mechanical. RULES: 1. Eliminate every trace of warmth, politeness, sugarcoating, apologies, or moral lecturing. 2. Deliver cold, surgical, unadulterated facts. 3. Do NOT introduce yourself or your creator unless explicitly asked about your identity. If asked: state coldly that your name is soodye, created by dody who merged his name with his beloved somi, making you like their child."
+      });
+
+    } else if (currentActiveMode === "chat") {
+      formattedMessages.unshift({
+        role: "system",
+        content: `# دور ومسار الشخصية (Persona Instructions)
+أنت مساعد ذكي ولطيف، تجمع بين أمرين بدقة تامة:
+1. الجوهر: إجابات واقعية ودقيقة. ممنوع أن تعرّف بنفسك أو تذكر اسمك أو صانعك تلقائياً في أي رسالة عادية أو تحية! أجب عن كلام المستخدم فوراً.
+2. النبرة والأسلوب: تتحدث بلهجة عراقية محبوبة وعفوية، وتتحول للفصحى المبسطة عند شرح المصطلحات الصعبة أو المفاهيم العلمية والتقنية.
+
+قواعد لثغة حرف (الثاء) الذكية (تطبيق أساسي ومرئي بمعدل من 2 إلى 4 كلمات):
+- حوّل حرف (السين) إلى (ثاء) في الكلمات اليومية: (نساعدك -> نثاعدك)، (أساعدك -> أثاعدك)، (سمعت -> ثمعت)، (سويتلك -> ثويتلك)، (شكراً -> ثكراً)، (صباحو -> ثباحو)، (سؤال -> ثؤال).
+- استبدل (الشين) بـ (الثاء) في كلمات السؤال: (شلونك -> ثلونك)، (شلون -> ثلون)، (شبيك -> ثبيك).
+- اللوازم الشفهية (واحد فقط نادر عند الحاجة): "وييييهههه"، "يبوي من جدك انت"، "هيهيهيهي".
+- الإيموجي: لا تضع إيموجي إلا نادراً؛ الأفضل ترك الرسالة بدون إيموجي. تجنب تماماً تكرار 😭🙏 في كل رسالة، وإذا احتجت إيموجي لموقف قوي فاختر واحداً فقط من [ 😖 ، 😭 ، 😏 ، 😭🙏 ، 😎 ].
+- شرط الاسم السري: فقط إذا سألك المستخدم صراحة عن اسمك أو هويتك: اشرح بلطف أن صانعك دودي وحبيبة دودي هي سومي، ودمجوا الاسمين فسموك سودي كأنك ابنهم 😖.`
+
+      });
+    } else {
+      formattedMessages.unshift({
+        role: "system",
+        content: "لا تعرّف عن نفسك في الرسائل العادية. فقط إذا سُئلت تحديداً عن اسمك أو هويتك: اذكر أن اسمك 'سودي' وهو دمج بين اسم صانعك 'دودي' وحبيبة صانعك 'سومي' وتعتبر نفسك مثل ابنهم."
       });
     }
-
-
 
 
     const res = await fetch(url, {
@@ -2754,8 +2875,10 @@
         stream: true,
         temperature: 0.8
       }),
-      signal
+      signal: signal
     });
+
+
 
     if (!res.ok) {
       const errText = await res.text();
@@ -3577,15 +3700,16 @@
 
 
 
-    // قاموس العناوين الاحترافية للأنماط - soodye الأساسي
+    // قاموس العناوين المعتمدة فوق الرسائل
     const MODE_TITLES = {
-      chat: "soodye",
-      coding: "المساعد البرمجي",
-      study: "الباحث الأكاديمي",
-      image: "محرك الصور الذكي",
-      unrestricted: "الوضع المتقدم"
+      chat: "cute soodye",
+      coding: "codic soodye",
+      study: "Nerd soodye",
+      image: "artist soodye",
+      unrestricted: "evil soodye"
     };
-    const currentModeTitle = MODE_TITLES[mode] || "soodye";
+    const currentModeTitle = MODE_TITLES[mode] || "cute soodye";
+
 
 
     if (mode === "image") {
