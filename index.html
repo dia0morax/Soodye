@@ -329,20 +329,91 @@
       .icon-white { stroke: #ffffff; }
 
       /* الرأس العلوي كلوح زجاجي بحافة سفلية زرقاء واضحة وبارزة */
-      /* شاشة القفل والترحيب الزجاجية الإلزامية soodye */
+      /* شاشة البداية والترحيب الاحترافية الفاخرة */
       #gatekeeperOverlay {
         position: fixed;
         inset: 0;
-        background: radial-gradient(circle at center, rgba(224, 242, 254, 0.85) 0%, rgba(248, 250, 252, 0.95) 100%);
-        backdrop-filter: blur(22px);
-        -webkit-backdrop-filter: blur(22px);
+        background: radial-gradient(circle at center, #0f172a 0%, #020617 100%) !important;
         z-index: 99999;
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 20px;
-        transition: opacity 0.4s ease, visibility 0.4s ease;
+        padding: 24px;
+        transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s ease;
       }
+      .gatekeeper-card {
+        background: rgba(15, 23, 42, 0.75) !important;
+        border: 1.5px solid rgba(56, 189, 248, 0.35) !important;
+        backdrop-filter: blur(30px) saturate(180%);
+        -webkit-backdrop-filter: blur(30px) saturate(180%);
+        box-shadow: 0 0 50px rgba(2, 132, 199, 0.35), inset 0 0 20px rgba(56, 189, 248, 0.15) !important;
+        border-radius: 28px;
+        padding: 40px 24px;
+        max-width: 380px;
+        width: 100%;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        animation: cardFloatReveal 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      @keyframes cardFloatReveal {
+        from { opacity: 0; transform: translateY(25px) scale(0.92); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
+      /* معالجة الشعار وإزالة السواد عبر ميزة screen والدمج الضوئي */
+      .splash-logo-container {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .splash-logo-container::before {
+        content: '';
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        background: radial-gradient(circle, rgba(56, 189, 248, 0.5) 0%, transparent 70%);
+        border-radius: 50%;
+        filter: blur(20px);
+        animation: auraPulse 2.8s infinite alternate ease-in-out;
+      }
+      @keyframes auraPulse {
+        0% { transform: scale(0.85); opacity: 0.4; }
+        100% { transform: scale(1.3); opacity: 0.9; }
+      }
+      .brand-logo-gatekeeper {
+        height: 85px !important;
+        width: auto !important;
+        object-fit: contain !important;
+        mix-blend-mode: screen !important; /* إخفاء الخلفية السوداء المربعة بالكامل */
+        filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.8)) !important;
+        animation: floatLogo 3s ease-in-out infinite;
+        position: relative;
+        z-index: 2;
+      }
+      @keyframes floatLogo {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-7px); }
+      }
+
+      .splash-welcome-title {
+        font-size: 20px;
+        font-weight: 800;
+        background: linear-gradient(135deg, #ffffff 0%, #38bdf8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1.4;
+      }
+      .splash-welcome-sub {
+        color: #94a3b8;
+        font-size: 13px;
+        margin-top: -6px;
+      }
+
       .gatekeeper-card {
         background: rgba(255, 255, 255, 0.92);
         border: 2px solid #0284c7;
@@ -1686,15 +1757,16 @@
   </head>
   <body>
 
-    <!-- بوابة الدخول الزجاجية الإلزامية soodye -->
+    <!-- شاشة البداية والترحيب الاحترافية الفاخرة -->
     <div id="gatekeeperOverlay">
       <div class="gatekeeper-card">
-        <img src="logo.png" alt="soodye" class="brand-logo-gatekeeper">
-        <div style="font-size: 16px; font-weight: 700; color: #0284c7; line-height: 1.5;">هلا يبوي، سودي لديكم لا خوف عليكم.</div>
-        <p style="color: #64748b; font-size: 12.5px; margin-top: -8px;">يرجى اختيار وسيلة الدخول للمتابعة:</p>
+        <div class="splash-logo-container">
+          <img src="logo.png" alt="soodye" class="brand-logo-gatekeeper">
+        </div>
+        <div class="splash-welcome-title">هلا يبوي، سودي لديكم لا خوف عليكم</div>
+        <p class="splash-welcome-sub">مساعدك الذكي لإدارة المهام، الأكواد، وتوليد الأفكار</p>
 
         <button class="gatekeeper-btn gatekeeper-btn-google" onclick="handleAuth()">
-
           <svg class="icon-svg icon-white" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
           <span>تسجيل الدخول عبر Google</span>
         </button>
@@ -1705,6 +1777,7 @@
         </button>
       </div>
     </div>
+
 
     <!-- مكتبة المحادثات الجانبية الفاخرة -->
     <div id="sidebarOverlay" onclick="toggleSidebar()"></div>
