@@ -5,16 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="soodye">
     <link rel="apple-touch-icon" href="logo.png">
     <link rel="icon" type="image/png" href="logo.png">
-    <meta name="theme-color" content="#f8fafc">
+    <meta name="theme-color" content="#0284c7">
 
-    <!-- مانيتفيست مدمج لتثبيت الموقع كتطبيق أصيل على شاشة الموبايل -->
-    <link rel="manifest" href='data:application/manifest+json,{"name":"soodye AI","short_name":"soodye","start_url":".","display":"standalone","background_color":"#f8fafc","theme_color":"#0284c7","icons":[{"src":"logo.png","sizes":"192x192 512x512","type":"image/png"}]}'>
+    <!-- ربط ملف التثبيت المعتمد -->
+    <link rel="manifest" href="manifest.json">
+
+    <script>
+      // تسجيل مشغل التثبيت في أندرويد وآيفون
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("./sw.js").catch(() => {});
+        });
+      }
+    </script>
 
     <title>soodye AI</title>
+
 
 
     <!-- Firebase SDKs -->
