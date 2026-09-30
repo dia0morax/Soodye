@@ -22,6 +22,11 @@
     <!-- مكتبة Puter.js لتوليد الصور مجاناً بدون مفاتيح أو سيرفر -->
     <script src="https://js.puter.com/v2/"></script>
 
+    <!-- محرك استخراج نصوص PDF محلياً بأقل استهلاك توكنز -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+
+
 
     <!-- الخط العربي الاحترافي العالمي IBM Plex Sans Arabic -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -967,18 +972,137 @@
         100% { opacity: 0; transform: translate(-50%, -10px); }
       }
 
+      /* حاوية التذييل وحقل الإدخال الذكي */
       footer {
         background: #ffffff;
-        padding: 12px 16px;
+        padding: 10px 14px;
         display: flex;
-        gap: 10px;
+        flex-direction: column;
+        gap: 8px;
         border-top: 1px solid #edf2f7;
-        align-items: center;
         box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.03);
         position: relative;
         z-index: 20;
         transition: transform 0.15s ease-out;
       }
+      .footer-input-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        width: 100%;
+        position: relative;
+      }
+
+      /* شريط معاينة المرفق المختار */
+      .attachment-preview-bar {
+        display: none;
+        align-items: center;
+        justify-content: space-between;
+        background: #f0f9ff;
+        border: 1.5px solid #bae6fd;
+        border-radius: 12px;
+        padding: 6px 12px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #0369a1;
+        width: 100%;
+        animation: slideUpFade 0.2s ease;
+      }
+      .attachment-preview-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        overflow: hidden;
+      }
+      .attachment-thumb {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        object-fit: cover;
+        border: 1px solid #38bdf8;
+      }
+      .btn-remove-attachment {
+        background: none;
+        border: none;
+        color: #ef4444;
+        cursor: pointer;
+        padding: 2px;
+        display: flex;
+        align-items: center;
+      }
+
+      /* زر المرفقات والقائمة المنسدلة الاحترافية */
+      .attach-menu-container {
+        position: relative;
+        display: inline-flex;
+      }
+      .attach-trigger-btn {
+        background: #f1f5f9;
+        border: 1.5px solid #e2e8f0;
+        color: #0284c7;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        flex-shrink: 0;
+      }
+      .attach-trigger-btn:hover, .attach-trigger-btn.active {
+        background: #e0f2fe;
+        border-color: #0284c7;
+        transform: scale(1.05);
+      }
+      .attach-dropdown {
+        display: none;
+        position: absolute;
+        bottom: 54px;
+        right: 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1.5px solid #0284c7;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(2, 132, 199, 0.18);
+        padding: 6px;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 170px;
+        z-index: 100;
+        animation: slideUpFade 0.2s ease;
+      }
+      .attach-dropdown.show {
+        display: flex;
+      }
+      .attach-option-btn {
+        background: transparent;
+        border: none;
+        padding: 9px 12px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #334155;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        text-align: right;
+        width: 100%;
+      }
+      .attach-option-btn:hover {
+        background: #f0f9ff;
+        color: #0284c7;
+      }
+      .attach-option-btn svg {
+        width: 17px;
+        height: 17px;
+        stroke: #0284c7;
+        flex-shrink: 0;
+      }
+
 
       textarea {
         flex: 1;
@@ -1414,20 +1538,18 @@
         </div>
 
         <div class="actions-group">
-          <div id="authStatus" class="user-info">
-            <span>ضيف</span>
-          </div>
-
           <!-- زر ملء الشاشة -->
           <button id="fullscreenToggleBtn" class="btn-action btn-icon-only" onclick="toggleAppFullscreen()" title="ملء الشاشة">
+
             <svg id="fullscreenIcon" class="icon-svg" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
           </button>
 
-          <!-- زر الأخطاء مخفي -->
-          <button id="errorsBtn" class="btn-action btn-errors" onclick="toggleErrorsModal()" style="display: none;">
+          <!-- زر الأخطاء مفعل ومتاح للتجربة -->
+          <button id="errorsBtn" class="btn-action btn-errors" onclick="toggleErrorsModal()" style="display: inline-flex;">
             <svg class="icon-svg" style="stroke: #0284c7;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
             <span id="errorsCountText">سجل التشخيص (0)</span>
           </button>
+
 
           <!-- زر تسجيل الدخول والخروج المحسّن كأيقونة/كبسولة أنيقة ومضغوطة -->
           <button id="authBtn" class="btn-action btn-icon-only" onclick="handleAuth()" title="تسجيل الدخول">
@@ -1461,18 +1583,24 @@
     </button>
   </div>
 
-  <!-- بطاقة الحالة والمؤشر المباشر النظيف (بدون فحص المزود) -->
-  <div id="statusBadge">
-    <div style="display: flex; align-items: center; gap: 6px;">
-      <svg class="icon-svg" style="width:13px; height:13px; stroke:#0284c7;" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-      <span id="modelIndicator" style="font-weight: 500;">الوضع: جاهز</span>
+  <!-- بطاقة الحالة وقائمة اختبار النماذج اليدوية المتاحة للتجربة -->
+  <div id="statusBadge" style="flex-direction: column; align-items: stretch; gap: 6px; padding: 4px 6px;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <svg class="icon-svg" style="width:13px; height:13px; stroke:#0284c7;" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        <span id="modelIndicator" style="font-weight: 500;">الوضع: جاهز</span>
+      </div>
+      <div id="syncIndicator" class="pulse-live">
+        <span class="pulse-dot"></span>
+        <span>متصل</span>
+      </div>
     </div>
-    <div id="syncIndicator" class="pulse-live">
-      <span class="pulse-dot"></span>
-      <span>متصل</span>
-    </div>
+    <select id="apiTesterSelect" onchange="onManualApiChange()" style="padding: 6px 10px; font-size: 12px; height: 34px;">
+      <option value="auto">⚡ التحويل التلقائي الذكي (افتراضي)</option>
+    </select>
   </div>
   </header>
+
 
 
 <div id="chatBox"></div>
@@ -1517,17 +1645,56 @@
 
 
 <footer>
-  <textarea id="promptInput" placeholder="اكتب طلبك هنا..."></textarea>
-  <!-- زر الإيقاف يحل محل زر الإرسال تماماً أثناء توليد الرد -->
-  <button id="stopBtn" class="stop-active-btn" style="display:none;" onclick="stopGeneration()">
-    <svg class="icon-svg icon-white" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"></rect></svg>
-    <span>إيقاف</span>
-  </button>
-  <button class="send-btn" id="sendBtn" onclick="handleSend()">
-    <span>إرسال</span>
-    <svg class="icon-svg icon-white" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-  </button>
+  <!-- شريط معاينة المرفق المختار -->
+  <div id="attachmentBar" class="attachment-preview-bar">
+    <div class="attachment-preview-info">
+      <img id="attachmentThumbPreview" class="attachment-thumb" style="display:none;" src="" alt="Thumbnail">
+      <svg id="attachmentDocIcon" class="icon-svg" style="width:20px; height:20px; stroke:#0284c7; display:none;" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+      <span id="attachmentFileName" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:210px;">ملف مرفق</span>
+    </div>
+    <button class="btn-remove-attachment" onclick="clearCurrentAttachment()" title="إلغاء المرفق">
+      <svg class="icon-svg" style="stroke:#ef4444; width:16px; height:16px;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+  </div>
+
+  <div class="footer-input-row">
+    <!-- قائمة المرفقات الاحترافية -->
+    <div class="attach-menu-container">
+      <button id="attachBtn" class="attach-trigger-btn" onclick="toggleAttachDropdown(event)" title="إرفاق ملف أو صورة">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+      </button>
+
+      <div id="attachDropdown" class="attach-dropdown">
+        <button class="attach-option-btn" onclick="triggerFilePicker('image')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+          <span>رفع صورة</span>
+        </button>
+        <button class="attach-option-btn" onclick="triggerFilePicker('doc')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+          <span>رفع ملف أو كود برمجى</span>
+        </button>
+      </div>
+
+      <!-- حقول الإدخال المخفية للملفات والصور (تدعم كافة الصيغ البرمجية والنصية) -->
+      <input type="file" id="imageInputHidden" accept="image/*" style="display:none;" onchange="handleImageSelection(this)">
+      <input type="file" id="docInputHidden" accept="*/*" style="display:none;" onchange="handleDocSelection(this)">
+    </div>
+
+
+    <textarea id="promptInput" placeholder="اكتب طلبك هنا..."></textarea>
+
+    <!-- زر الإيقاف يحل محل زر الإرسال تماماً أثناء توليد الرد -->
+    <button id="stopBtn" class="stop-active-btn" style="display:none;" onclick="stopGeneration()">
+      <svg class="icon-svg icon-white" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"></rect></svg>
+      <span>إيقاف</span>
+    </button>
+    <button class="send-btn" id="sendBtn" onclick="handleSend()">
+      <span>إرسال</span>
+      <svg class="icon-svg icon-white" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+    </button>
+  </div>
 </footer>
+
 
 
 
@@ -1778,17 +1945,23 @@
   function continueAsGuest() {
     isGuestSession = true;
     sessionStorage.setItem("soodye_guest_session", "true");
-    const authDiv = document.getElementById("authStatus");
-    if (authDiv) authDiv.innerHTML = `<span>👤 وضع الضيف</span>`;
+    const sidebarBadge = document.getElementById("sidebarUserBadge");
+    if (sidebarBadge) {
+      sidebarBadge.innerHTML = `
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path><path d="M6 6h10"></path><path d="M6 10h10"></path></svg>
+        <div style="display:flex; flex-direction:column; line-height:1.2;">
+          <strong style="font-size:13.5px; color:#0f172a;">مكتبة soodye</strong>
+          <span style="font-size:11px; color:#64748b; font-weight:500;">وضع الضيف</span>
+        </div>
+      `;
+    }
     checkGatekeeperState();
     showCopyToast("مرحباً بك في soodye كضيف");
   }
 
   auth.onAuthStateChanged(user => {
-    const authDiv = document.getElementById("authStatus");
     const authBtn = document.getElementById("authBtn");
     const sync = document.getElementById("syncIndicator");
-
     const sidebarBadge = document.getElementById("sidebarUserBadge");
 
     if (user) {
@@ -1796,8 +1969,6 @@
       isGuestSession = false;
       sessionStorage.removeItem("soodye_guest_session");
       const name = user.displayName ? user.displayName.split(' ')[0] : 'مستخدم';
-      const photo = user.photoURL ? `<img src="${user.photoURL}" alt="User">` : '';
-      authDiv.innerHTML = `${photo} <span>${name}</span>`;
 
       if (sidebarBadge) {
         const userImg = user.photoURL
@@ -1834,7 +2005,6 @@
     } else {
       currentUser = null;
       if (isGuestSession) {
-        authDiv.innerHTML = `<span>👤 ضيف</span>`;
         if (sidebarBadge) {
           sidebarBadge.innerHTML = `
                 <svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path><path d="M6 6h10"></path><path d="M6 10h10"></path></svg>
@@ -1845,7 +2015,6 @@
               `;
         }
       } else {
-        authDiv.innerHTML = `<span>غير مسجل</span>`;
         if (sidebarBadge) {
           sidebarBadge.innerHTML = `
                 <svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path><path d="M6 6h10"></path><path d="M6 10h10"></path></svg>
@@ -1853,6 +2022,7 @@
               `;
         }
       }
+
       authBtn.title = "تسجيل الدخول عبر Google";
       authBtn.innerHTML = `
           <svg class="icon-svg" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
@@ -2064,21 +2234,33 @@
 
   // --- 3. استدعاءات الـ APIs المباشرة بالتدفق المباشر الحقيقي (Streaming) ---
   async function callGemini(item, history, isUnrestricted = false, onChunk = null, signal = null) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${item.model}:streamGenerateContent?alt=sse`;
-    // سقف أمان ذكي: تذكر آخر 20 رسالة كاملة لمنع تجاوز حد التوكنز اللحظي (TPM Limit 429)
-    // تصفية السجل واقتصاره على النصوص الصافية فقط
     const safeHistory = history.filter(m => {
       const str = String(m.content || "");
-      return !str.includes("data:image/") && !str.includes("img-box-") && !str.includes("<img");
-    }).slice(-12);
+      return !str.includes("img-box-");
+    }).slice(-10);
 
-    const contents = safeHistory.map(msg => ({
-      role: msg.role === "assistant" ? "model" : "user",
-      parts: [{ text: String(msg.content).slice(0, 4000) }]
-    }));
+    const contents = safeHistory.map((msg, index) => {
+      const isLatest = (index === safeHistory.length - 1 && msg.role === "user");
+      let parts = [{ text: String(msg.content).slice(0, 7000) }];
 
+      // حقن الصورة المضغوطة كبيانات Base64 متطورة للرسالة الأخيرة فقط
+      if (isLatest && msg.attachedImage) {
+        parts.unshift({
+          inlineData: {
+            mimeType: msg.attachedImage.mimeType,
+            data: msg.attachedImage.base64
+          }
+        });
+      }
+
+      return {
+        role: msg.role === "assistant" ? "model" : "user",
+        parts
+      };
+    });
 
     const bodyData = { contents };
+
 
 
     // تفعيل أداة البحث فقط للأسئلة البحثية وليس لكل تحية بسيطة لتفادي حظر 429
@@ -2903,8 +3085,154 @@
     }
   }
 
+  // --- محرك إدارة المرفقات والصور والـ PDF المحلي الذكي ---
+  let currentAttachedData = null; // { type: 'image'|'doc', mimeType, base64, textContent, fileName }
+
+  function toggleAttachDropdown(e) {
+    e.stopPropagation();
+    const dropdown = document.getElementById("attachDropdown");
+    dropdown.classList.toggle("show");
+  }
+
+  document.addEventListener("click", () => {
+    const dropdown = document.getElementById("attachDropdown");
+    if (dropdown) dropdown.classList.remove("show");
+  });
+
+  function triggerFilePicker(mode) {
+    const dropdown = document.getElementById("attachDropdown");
+    if (dropdown) dropdown.classList.remove("show");
+    if (mode === "image") {
+      document.getElementById("imageInputHidden").click();
+    } else {
+      document.getElementById("docInputHidden").click();
+    }
+  }
+
+  function clearCurrentAttachment() {
+    currentAttachedData = null;
+    document.getElementById("attachmentBar").style.display = "none";
+    document.getElementById("imageInputHidden").value = "";
+    document.getElementById("docInputHidden").value = "";
+  }
+
+  // 1. معالجة الصور وضغط أبعادها وجودتها عبر Canvas لتوفير التوكنز
+  function handleImageSelection(input) {
+    const file = input.files?.[0];
+    if (!file) return;
+
+    showCopyToast("⏳ جاري تجهيز وضغط الصورة...");
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        // ضغط الأبعاد بحد أقصى 1024 بكسل مع الحفاظ على النسبة
+        const maxDim = 1024;
+        let w = img.width, h = img.height;
+        if (w > maxDim || h > maxDim) {
+          if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+          else { w = Math.round((w * maxDim) / h); h = maxDim; }
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, w, h);
+
+        // تصدير بجودة مضغوطة توفر أكثر من 70% من البيانات
+        const compressedBase64 = canvas.toDataURL("image/jpeg", 0.78);
+        const rawBase64 = compressedBase64.split(",")[1];
+
+        currentAttachedData = {
+          type: "image",
+          mimeType: "image/jpeg",
+          base64: rawBase64,
+          dataUrl: compressedBase64,
+          fileName: file.name
+        };
+
+        // إظهار المعاينة
+        const bar = document.getElementById("attachmentBar");
+        const thumb = document.getElementById("attachmentThumbPreview");
+        const docIcon = document.getElementById("attachmentDocIcon");
+        const nameEl = document.getElementById("attachmentFileName");
+
+        thumb.src = compressedBase64;
+        thumb.style.display = "block";
+        docIcon.style.display = "none";
+        nameEl.innerText = `صورة: ${file.name}`;
+        bar.style.display = "flex";
+        showCopyToast("✓ تم إرفاق الصورة وضغطها بنجاح");
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // 2. معالجة كافة أنواع الملفات والمستندات والأكواد البرمجية (HTML, JS, CSS, PY, TXT, PDF, إلخ)
+  async function handleDocSelection(input) {
+    const file = input.files?.[0];
+    if (!file) return;
+
+    showCopyToast("⏳ جاري قراءة الملف وتجهيزه...");
+
+    try {
+      let extractedText = "";
+      const lowerName = file.name.toLowerCase();
+
+      // معالجة ملفات PDF واستخراج نصوصها الصافية لتوفير التوكنز
+      if (file.type === "application/pdf" || lowerName.endsWith(".pdf")) {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const totalPages = pdf.numPages;
+        let fullTextArray = [];
+
+        for (let i = 1; i <= totalPages; i++) {
+          const page = await pdf.getPage(i);
+          const textContent = await page.getTextContent();
+          const pageStrings = textContent.items.map(item => item.str).join(" ");
+          if (pageStrings.trim()) {
+            fullTextArray.push(`[صفحة ${i}]:\n${pageStrings.replace(/\s+/g, ' ').trim()}`);
+          }
+        }
+        extractedText = fullTextArray.join("\n\n");
+      } else {
+        // قراءة الملفات البرمجية والنصية (HTML, CSS, JS, JSON, PY, C, CPP, JAVA, TXT, MD, CSV, XML...)
+        extractedText = await file.text();
+      }
+
+      if (!extractedText || !extractedText.trim()) {
+        throw new Error("الملف فارغ أو لا يحتوي على محتوى نصي يمكن قراءته");
+      }
+
+      currentAttachedData = {
+        type: "doc",
+        textContent: extractedText,
+        fileName: file.name
+      };
+
+      const bar = document.getElementById("attachmentBar");
+      const thumb = document.getElementById("attachmentThumbPreview");
+      const docIcon = document.getElementById("attachmentDocIcon");
+      const nameEl = document.getElementById("attachmentFileName");
+
+      thumb.style.display = "none";
+      docIcon.style.display = "block";
+      nameEl.innerText = `ملف: ${file.name}`;
+      bar.style.display = "flex";
+      showCopyToast(`✓ تم إرفاق: ${file.name}`);
+
+    } catch (err) {
+      alert("خطأ أثناء قراءة الملف: " + err.message);
+      clearCurrentAttachment();
+    }
+  }
+
+
   // دالة لاستخراج وقراءة محتوى الروابط المباشرة
   async function extractUrlContentIfPresent(text) {
+
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const urls = text.match(urlRegex);
     if (!urls || urls.length === 0) return text;
@@ -2926,11 +3254,30 @@
 
   async function handleSend() {
     const input = document.getElementById("promptInput");
-    const prompt = input.value.trim();
-    if (!prompt) return;
+    let prompt = input.value.trim();
+    const activeAttachment = currentAttachedData;
+
+    // السماح بالإرسال حتى لو لم يكتب نصاً إذا كان هناك ملف أو صورة مرفقة
+    if (!prompt && !activeAttachment) return;
+    if (!prompt && activeAttachment) {
+      prompt = (activeAttachment.type === "image") ? "اشرح وحلل هذه الصورة بالتفصيل." : "لخص وحلل مضمون هذا الملف.";
+    }
 
     input.value = "";
-    const userMsgDiv = renderMessage("user", prompt);
+    clearCurrentAttachment();
+
+    // إعداد واجهة ظهور رسالة المستخدم مع بطاقة المرفق إن وجد
+    let displayMessage = prompt;
+    if (activeAttachment) {
+      if (activeAttachment.type === "image") {
+        displayMessage = `<div style="margin-bottom:8px;"><img src="${activeAttachment.dataUrl}" style="max-width:180px; max-height:160px; border-radius:10px; border:1px solid rgba(255,255,255,0.4); display:block;" /></div>${prompt}`;
+      } else {
+        displayMessage = `<div style="margin-bottom:6px; font-size:12px; background:rgba(255,255,255,0.2); padding:4px 8px; border-radius:6px; display:inline-flex; align-items:center; gap:5px;">📄 <span>${activeAttachment.fileName}</span></div><br/>${prompt}`;
+      }
+    }
+
+    const userMsgDiv = renderMessage("user", displayMessage);
+
     lastUserBubbleEl = userMsgDiv ? userMsgDiv.parentElement : null;
 
     const mode = currentActiveMode;
@@ -2968,21 +3315,34 @@
       }
     }
 
-    // حفظ السؤال في الذاكرة وقاعدة البيانات
-    conversationHistory.push({ role: "user", content: prompt });
-    lastUserDbKey = saveMessageToDb("user", prompt);
+    // دمج محتوى المستندات الطويلة بشكل ذكي ومفلتر
+    let finalPayloadContent = processedPrompt;
+    if (activeAttachment && activeAttachment.type === "doc" && activeAttachment.textContent) {
+      // قص الأجزاء الضخمة بحد آمن ذكي يمنع خطأ 429
+      const cleanedDoc = activeAttachment.textContent.slice(0, 18000);
+      finalPayloadContent = `[محتوى المستند المرفق (${activeAttachment.fileName})]:\n${cleanedDoc}\n\n[طلب وسؤال المستخدم حول المستند أعلاه]:\n${processedPrompt}`;
+    }
 
-    // 1. توليد عنوان ذكي ومعبر للمحادثة بنصف سطر عند أول رسالة
+    const historyItem = { 
+      role: "user", 
+      content: prompt,
+      attachedImage: (activeAttachment && activeAttachment.type === "image") ? { mimeType: activeAttachment.mimeType, base64: activeAttachment.base64 } : null
+    };
+
+    conversationHistory.push(historyItem);
+    lastUserDbKey = saveMessageToDb("user", displayMessage);
+
     if (conversationHistory.length <= 1 && currentUser) {
       generateSmartSessionTitle(prompt, currentSessionId);
     }
 
-
-    // تجهيز سياق الإرسال الفعلي للنموذج الحالي
     const currentPayloadHistory = [...conversationHistory];
-    if (processedPrompt !== prompt) {
-      currentPayloadHistory[currentPayloadHistory.length - 1] = { role: "user", content: processedPrompt };
-    }
+    currentPayloadHistory[currentPayloadHistory.length - 1] = { 
+      role: "user", 
+      content: finalPayloadContent,
+      attachedImage: historyItem.attachedImage
+    };
+
 
 
 
@@ -3081,6 +3441,11 @@
     }
 
     let chain = [...MODES_CONFIG[mode]];
+    // إذا قام المستخدم بتثبيت نموذج محدد من القائمة المنسدلة للتجربة
+    if (manualSelectedApi !== "auto" && MODES_CONFIG[mode][manualSelectedApi]) {
+      chain = [MODES_CONFIG[mode][manualSelectedApi]];
+    }
+
     const isUnrestricted = (mode === "unrestricted");
     let resolved = false;
 
@@ -3090,6 +3455,7 @@
 
     for (let i = 0; i < chain.length; i++) {
       const target = chain[i];
+
 
       let streamBubble = null;
       try {
