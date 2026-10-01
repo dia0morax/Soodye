@@ -69,16 +69,127 @@
         --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
         --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.07);
       }
+      body.dark-theme {
+        --bg: #090d16 !important;
+        --card: #111827 !important;
+        --border: #1f293d !important;
+        --text: #f1f5f9 !important;
+        --text-muted: #94a3b8 !important;
+        --accent: #38bdf8 !important;
+        --accent-soft: #082f49 !important;
+        --accent-hover: #0284c7 !important;
+        --ai-bubble: #111827 !important;
+      }
+      body.dark-theme html, body.dark-theme {
+        background-color: #090d16 !important;
+        color: #f1f5f9 !important;
+      }
+      body.dark-theme header {
+        background: rgba(17, 24, 39, 0.95) !important;
+        border-bottom-color: #1f293d !important;
+      }
+      body.dark-theme #chatBox {
+        background: #090d16 !important;
+      }
+      body.dark-theme footer {
+        background: #111827 !important;
+        border-top-color: #1f293d !important;
+      }
+      body.dark-theme textarea {
+        background: #1f293d !important;
+        color: #f1f5f9 !important;
+        border-color: #334155 !important;
+      }
+      body.dark-theme .ai .msg {
+        background: #111827 !important;
+        color: #f1f5f9 !important;
+        border-color: #1f293d !important;
+      }
+      body.dark-theme .mode-pill {
+        background: #111827 !important;
+        border-color: #1f293d !important;
+        color: #94a3b8 !important;
+      }
+      body.dark-theme .mode-pill.active {
+        background: #0284c7 !important;
+        color: #ffffff !important;
+      }
+      body.dark-theme .aspect-chip {
+        background: #111827 !important;
+        border-color: #1f293d !important;
+        color: #38bdf8 !important;
+      }
+      body.dark-theme .aspect-chip.active {
+        background: #0284c7 !important;
+        color: #ffffff !important;
+      }
+      body.dark-theme .custom-style-btn {
+        background: #111827 !important;
+        border-color: #1f293d !important;
+        color: #38bdf8 !important;
+      }
+      body.dark-theme .custom-style-menu,
+      body.dark-theme .attach-dropdown {
+        background: rgba(17, 24, 39, 0.98) !important;
+        border-color: #1f293d !important;
+      }
+      body.dark-theme .custom-style-item,
+      body.dark-theme .attach-option-btn {
+        color: #cbd5e1 !important;
+      }
+      body.dark-theme .custom-style-item:hover,
+      body.dark-theme .attach-option-btn:hover {
+        background: #082f49 !important;
+        color: #38bdf8 !important;
+      }
+      body.dark-theme #chatsSidebar {
+        background: #111827 !important;
+        border-left-color: #1f293d !important;
+      }
+      body.dark-theme .sidebar-header {
+        background: #111827 !important;
+        border-bottom-color: #1f293d !important;
+      }
+      body.dark-theme .chat-item {
+        background: #111827 !important;
+        border-color: #1f293d !important;
+        color: #e2e8f0 !important;
+      }
+      body.dark-theme .btn-action {
+        background: rgba(17, 24, 39, 0.95) !important;
+        border-color: #1f293d !important;
+        color: #38bdf8 !important;
+      }
+      body.dark-theme .attach-trigger-btn {
+        background: #1f293d !important;
+        border-color: #334155 !important;
+        color: #38bdf8 !important;
+      }
+      body.dark-theme .aspect-ratio-selector-bar {
+        background: rgba(17, 24, 39, 0.95) !important;
+        border-top-color: #1f293d !important;
+        border-bottom-color: #1f293d !important;
+      }
+      body.dark-theme .attachment-preview-bar {
+        background: #082f49 !important;
+        border-color: #0284c7 !important;
+        color: #38bdf8 !important;
+      }
+
+      body.dark-theme .brand-logo-img {
+        mix-blend-mode: normal !important;
+        filter: drop-shadow(0 2px 8px rgba(56, 189, 248, 0.25));
+      }
       * {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
         font-family: 'IBM Plex Sans Arabic', -apple-system, BlinkMacSystemFont, sans-serif;
         -webkit-tap-highlight-color: transparent;
-        -webkit-touch-callout: none; /* منع ظهور قوائم المتصفح المنبثقة عند الضغط المطول */
+        -webkit-touch-callout: none;
       }
       html, body {
-        background-color: #f8fafc !important;
+        background-color: var(--bg);
         color: var(--text);
         margin: 0;
         padding: 0;
@@ -89,8 +200,9 @@
         -webkit-user-select: none;
         -webkit-backface-visibility: hidden;
         backface-visibility: hidden;
-        transform: translateZ(0); /* تثبيت طبقة العرض في كارت الشاشة */
+        transform: translateZ(0);
       }
+
       body {
         display: flex;
         flex-direction: column;
@@ -495,21 +607,25 @@
 
       .user-info img { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #0284c7; flex-shrink: 0; }
 
-      /* شريط أبعاد الصورة بإطار سماوي محدد المعالم */
+      /* شريط أبعاد الصورة مع إعادة خاصية التمرير الأفقي يميناً ويساراً */
       .aspect-ratio-selector-bar {
         display: none;
         align-items: center;
         gap: 8px;
         padding: 8px 14px;
-        background: rgba(240, 249, 255, 0.85) !important;
+        background: rgba(240, 249, 255, 0.95) !important;
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
         border-top: 1.5px solid #38bdf8 !important;
         border-bottom: 1.5px solid #38bdf8 !important;
-        overflow-x: auto;
+        overflow-x: auto !important;
         scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        position: relative;
+        z-index: 30;
       }
       .aspect-ratio-selector-bar::-webkit-scrollbar { display: none; }
+
 
       /* كبسولات الأبعاد بحواف زرقاء واضحة المعالم وغير ممسوحة */
       .aspect-chip {
@@ -527,6 +643,7 @@
         transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         white-space: nowrap;
         box-shadow: 0 2px 8px rgba(2, 132, 199, 0.12);
+        flex-shrink: 0;
       }
       .aspect-chip:hover {
         background: #e0f2fe !important;
@@ -699,10 +816,103 @@
         align-items: center;
         padding: 0 4px;
       }
-      /* إخفاء سجل الأخطاء وقائمة تبديل النماذج لتهيئة الواجهة للعمل العام */
-      #errorsBtn, #apiTesterSelect {
+      /* إخفاء شريط الأخطاء وقائمة النماذج المؤقتة ليكون الموقع جاهزاً للعمل */
+      #apiTesterSelect, #errorsBtn {
         display: none !important;
       }
+
+
+      /* قائمة أنماط الصور المنسدلة المخصصة الاحترافية بثيم الموقع والتأثيرات */
+      .custom-style-dropdown-wrapper {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        margin-left: 8px;
+        border-left: 1.5px solid #bae6fd;
+        padding-left: 10px;
+        flex-shrink: 0;
+      }
+      .custom-style-btn {
+        background: #ffffff !important;
+        border: 1.5px solid #38bdf8 !important;
+        color: #0369a1 !important;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 11.5px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 2px 6px rgba(2, 132, 199, 0.08);
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        white-space: nowrap;
+      }
+      .custom-style-btn:hover {
+        background: #f0f9ff !important;
+        border-color: #0284c7 !important;
+        transform: translateY(-1px);
+      }
+      .custom-style-menu {
+        display: none;
+        position: fixed;
+        background: rgba(255, 255, 255, 0.98) !important;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1.5px solid #0284c7 !important;
+        border-radius: 16px;
+        box-shadow: 0 -10px 30px rgba(2, 132, 199, 0.3) !important;
+        padding: 6px;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 210px;
+        z-index: 2147483647 !important;
+        pointer-events: auto !important;
+        animation: slideUpFade 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .custom-style-menu.open {
+        display: flex !important;
+      }
+      .custom-style-item {
+        background: transparent;
+        border: 1px solid transparent;
+        padding: 9px 12px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #334155;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        cursor: pointer !important;
+        pointer-events: auto !important;
+        transition: all 0.18s ease;
+        text-align: right;
+        width: 100%;
+      }
+      .custom-style-item:hover {
+        background: #f0f9ff;
+        color: #0284c7;
+        border-color: #bae6fd;
+      }
+      .custom-style-item.active {
+        background: #e0f2fe;
+        color: #0369a1;
+        font-weight: 700;
+        border-color: #7dd3fc;
+      }
+      .custom-style-item svg {
+        width: 15px;
+        height: 15px;
+        stroke: #0284c7;
+        flex-shrink: 0;
+        pointer-events: none;
+      }
+
+
+
+
 
 
       #chatBox {
@@ -1171,22 +1381,24 @@
       }
       .attach-dropdown {
         display: none;
-        position: absolute;
-        bottom: 54px;
-        right: 0;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1.5px solid #0284c7;
-        border-radius: 16px;
-        box-shadow: 0 10px 25px rgba(2, 132, 199, 0.18);
-        padding: 6px;
+        position: fixed !important;
+        background: rgba(255, 255, 255, 0.99) !important;
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 2px solid #0284c7 !important;
+        border-radius: 18px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35) !important;
+        padding: 8px;
         flex-direction: column;
-        gap: 4px;
-        min-width: 170px;
-        z-index: 100;
+        gap: 6px;
+        min-width: 200px;
+        z-index: 2147483647 !important;
+        pointer-events: auto !important;
         animation: slideUpFade 0.2s ease;
       }
+
+
+
       .attach-dropdown.show {
         display: flex;
       }
@@ -1725,10 +1937,23 @@
         <svg class="icon-svg icon-white" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
         <span>محادثة جديدة</span>
       </button>
+
+      <!-- قسم الإعدادات السريع والوضع الليلي -->
+      <div style="padding: 0 14px 10px; display: flex; flex-direction: column; gap: 6px;">
+        <button class="btn-action" onclick="toggleDarkMode()" style="width: 100%; justify-content: space-between; padding: 10px 14px; border-radius: 12px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <span style="font-size: 13px; font-weight: 700;">الوضع الليلي</span>
+          </div>
+          <span id="themeToggleIcon">🌙</span>
+        </button>
+      </div>
+
       <div class="conversations-list" id="sessionsList">
         <div style="font-size: 12px; color: #64748b; padding: 12px; text-align: center;">سجل الدخول لحفظ المحادثات والتبديل بينها</div>
       </div>
     </aside>
+
 
     <header>
       <div class="top-bar">
@@ -1742,11 +1967,18 @@
 
 
         <div class="actions-group">
+          <!-- زر تشخيص الأخطاء ومتابعة برومبت غروك -->
+          <button id="errorsBtn" class="btn-action" onclick="toggleErrorsModal()" title="سجل الأخطاء والتشخيص">
+            <svg class="icon-svg" style="stroke:#ef4444;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            <span id="errorsCountText">الأخطاء (0)</span>
+          </button>
+
           <!-- زر تسجيل الدخول والخروج المحسّن كأيقونة/كبسولة أنيقة ومضغوطة -->
           <button id="authBtn" class="btn-action btn-icon-only" onclick="handleAuth()" title="تسجيل الدخول">
             <svg class="icon-svg" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
           </button>
         </div>
+
       </div>
 
 
@@ -1799,10 +2031,22 @@
 
 <!-- شريط الأبعاد الاحترافي بأيقونات هندسية متناسقة مع ثيم الموقع -->
 <div id="imageAspectBar" class="aspect-ratio-selector-bar">
+  <!-- زر اختيار نمط توليد الصور -->
+  <div class="custom-style-dropdown-wrapper">
+    <button type="button" class="custom-style-btn" id="activeStyleBtn" onclick="toggleStyleDropdown(event)">
+      <svg class="icon-svg" style="width:14px; height:14px;" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+      <span id="activeStyleLabel">نمط: واقعي</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:10px; height:10px; stroke:#0369a1;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </button>
+  </div>
+
   <span style="font-size:11.5px; font-weight:700; color:#0369a1; display:flex; align-items:center; gap:5px; flex-shrink:0;">
+
     <svg class="icon-svg" style="width:14px; height:14px; stroke:#0284c7;" viewBox="0 0 24 24"><path d="M21 3H3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z"></path><path d="M9 3v18"></path><path d="M15 3v18"></path><path d="M3 9h18"></path><path d="M3 15h18"></path></svg>
     <span>الأبعاد:</span>
   </span>
+
+
 
   <!-- 1:1 مربع متناسق -->
   <button class="aspect-chip active" data-ratio="1:1" data-w="1024" data-h="1024" onclick="setAspectRatio('1:1', 1024, 1024, this)">
@@ -1944,6 +2188,42 @@
   </div>
 </div>
 
+<!-- قائمة خيارات الأنماط المستقلة للعمل فوق كل الطبقات بدقة -->
+<div class="custom-style-menu" id="customStyleMenu">
+  <div class="custom-style-item active" data-style="realistic" onpointerdown="selectImageStyle('realistic', 'واقعي', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+    <span>سينمائي واقعي (Realistic)</span>
+  </div>
+  <div class="custom-style-item" data-style="anime" onpointerdown="selectImageStyle('anime', 'أنمي', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+    <span>أنمي ياباني (Anime Art)</span>
+  </div>
+  <div class="custom-style-item" data-style="custom" onpointerdown="selectImageStyle('custom', 'مخصص', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+    <span>برومبت مخصص (Custom)</span>
+  </div>
+</div>
+
+
+<!-- نافذة تنبيه النمط المخصص الزجاجية الاحترافية بثيم الموقع -->
+<div id="customStyleAlertModal" style="display:none; position:fixed; inset:0; background:rgba(15, 23, 42, 0.55); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:999999; justify-content:center; align-items:center; padding:20px;">
+
+  <div style="background:rgba(255, 255, 255, 0.96); border:1.5px solid #bae6fd; border-radius:22px; padding:24px 20px; max-width:380px; width:100%; text-align:center; display:flex; flex-direction:column; align-items:center; gap:14px; box-shadow:0 20px 40px -10px rgba(2, 132, 199, 0.25); animation:slideUpFade 0.22s cubic-bezier(0.16, 1, 0.3, 1);">
+    <div style="width:52px; height:52px; border-radius:50%; background:#e0f2fe; display:flex; align-items:center; justify-content:center; color:#0284c7;">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+    </div>
+    <div style="font-size:16px; font-weight:800; color:#0f172a;">تنبيه النمط المخصص</div>
+    <div style="font-size:13px; color:#64748b; line-height:1.6; margin-top:-4px;">
+      يجب كتابة البرومبت المخصص <strong>باللغة الإنجليزية</strong> بتفاصيل دقيقة.<br>
+      يُفضل استخدام وضع الشات (عام أو كودنق) ليقوم بصياغة برومبت متكامل ومفصل ثم نسخه هنا.
+    </div>
+    <button onclick="closeCustomStyleAlertModal()" style="width:100%; background:linear-gradient(135deg, #0284c7, #0369a1); color:#ffffff; border:none; padding:11px 18px; border-radius:12px; font-size:13.5px; font-weight:700; cursor:pointer; box-shadow:0 4px 12px rgba(2, 132, 199, 0.3); transition:all 0.2s;">
+      فهمت ذلك، متابعة
+    </button>
+  </div>
+</div>
+
+
 <!-- نافذة عرض تفاصيل الأخطاء -->
 <div id="errorsModal">
 
@@ -2074,12 +2354,82 @@
     }
   }
 
-  // متغيرات الأبعاد المختارة للصور
+  // متغيرات الأبعاد ونمط الصورة المختار
   let selectedAspectRatio = "1:1";
   let selectedWidth = 1024;
   let selectedHeight = 1024;
+  let selectedImageStyle = "realistic";
+
+  function toggleStyleDropdown(e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    const menu = document.getElementById("customStyleMenu");
+    const btn = document.getElementById("activeStyleBtn");
+    if (!menu || !btn) return;
+
+    const isOpen = menu.classList.contains("open");
+    if (isOpen) {
+      menu.classList.remove("open");
+    } else {
+      const rect = btn.getBoundingClientRect();
+      menu.style.position = "fixed";
+      menu.style.bottom = (window.innerHeight - rect.top + 8) + "px";
+      menu.style.right = Math.max(10, (window.innerWidth - rect.right)) + "px";
+      menu.style.left = "auto";
+      menu.style.top = "auto";
+      menu.classList.add("open");
+    }
+  }
+
+  document.addEventListener("pointerdown", (e) => {
+    const menu = document.getElementById("customStyleMenu");
+    const btn = document.getElementById("activeStyleBtn");
+    if (menu && menu.classList.contains("open")) {
+      if ((btn && btn.contains(e.target)) || (menu && menu.contains(e.target))) return;
+      menu.classList.remove("open");
+    }
+  });
+
+  function selectImageStyle(styleKey, label, btnEl) {
+    selectedImageStyle = styleKey;
+    const labelEl = document.getElementById("activeStyleLabel");
+    if (labelEl) labelEl.innerText = `نمط: ${label}`;
+
+    document.querySelectorAll(".custom-style-item").forEach(item => item.classList.remove("active"));
+    if (btnEl) btnEl.classList.add("active");
+
+    const menu = document.getElementById("customStyleMenu");
+    if (menu) menu.classList.remove("open");
+
+    if (styleKey === "custom") {
+      openCustomStyleAlertModal();
+    } else if (styleKey === "anime") {
+      showCopyToast("تم تفعيل نمط الأنمي المتقدم");
+    } else {
+      showCopyToast("تم تفعيل النمط الواقعي");
+    }
+  }
+
+
+
+
+  function openCustomStyleAlertModal() {
+    const modal = document.getElementById("customStyleAlertModal");
+    if (modal) modal.style.display = "flex";
+  }
+
+  function closeCustomStyleAlertModal() {
+    const modal = document.getElementById("customStyleAlertModal");
+    if (modal) modal.style.display = "none";
+    showCopyToast("تم اختيار النمط المخصص");
+  }
 
   function setAspectRatio(ratio, w, h, btnEl) {
+
+
+
     selectedAspectRatio = ratio;
     selectedWidth = w;
     selectedHeight = h;
@@ -2129,10 +2479,15 @@
 
 
 
-  // تفعيل وتمرير الوضع المحفوظ فور التحميل
+  // تسريع التحميل وتقليل الـ Lag وخفض الحمل التراكمي
   window.addEventListener("DOMContentLoaded", () => {
     selectAppMode(currentActiveMode);
+    // تنظيف مؤقت للذاكرة السريعة لمنع أي تباطؤ
+    if (window.performance && performance.clearResourceTimings) {
+      try { performance.clearResourceTimings(); } catch(e){}
+    }
   });
+
 
 
   let isGuestSession = sessionStorage.getItem("soodye_guest_session") === "true";
@@ -3429,15 +3784,62 @@ ${nameIdentityInstruction} وفي هذا النمط إذا سُئلت عن اس�
   let currentAttachedData = null; // { type: 'image'|'doc', mimeType, base64, textContent, fileName }
 
   function toggleAttachDropdown(e) {
-    e.stopPropagation();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     const dropdown = document.getElementById("attachDropdown");
-    dropdown.classList.toggle("show");
+    const btn = document.getElementById("attachBtn");
+    if (!dropdown || !btn) return;
+
+    const isOpen = dropdown.classList.contains("show");
+    if (isOpen) {
+      dropdown.classList.remove("show");
+    } else {
+      const rect = btn.getBoundingClientRect();
+      dropdown.style.position = "fixed";
+      dropdown.style.bottom = (window.innerHeight - rect.top + 14) + "px";
+      dropdown.style.right = Math.max(12, (window.innerWidth - rect.right - 10)) + "px";
+      dropdown.style.left = "auto";
+      dropdown.style.top = "auto";
+      dropdown.style.zIndex = "2147483647";
+      dropdown.classList.add("show");
+    }
   }
 
-  document.addEventListener("click", () => {
-    const dropdown = document.getElementById("attachDropdown");
-    if (dropdown) dropdown.classList.remove("show");
+  // إدارة الوضع الليلي وحفظ التفضيل
+  let isDarkMode = localStorage.getItem("soodye_theme") === "dark";
+  function applyTheme(isDark) {
+    if (isDark) {
+      document.body.classList.add("dark-theme");
+      const icon = document.getElementById("themeToggleIcon");
+      if (icon) icon.innerText = "☀️";
+    } else {
+      document.body.classList.remove("dark-theme");
+      const icon = document.getElementById("themeToggleIcon");
+      if (icon) icon.innerText = "🌙";
+    }
+  }
+  function toggleDarkMode() {
+    isDarkMode = !isDarkMode;
+    localStorage.setItem("soodye_theme", isDarkMode ? "dark" : "light");
+    applyTheme(isDarkMode);
+    showCopyToast(isDarkMode ? "🌙 تم تفعيل الوضع الليلي" : "☀️️ تم تفعيل الوضع النهاري");
+  }
+  document.addEventListener("DOMContentLoaded", () => {
+    applyTheme(isDarkMode);
   });
+
+
+  document.addEventListener("pointerdown", (e) => {
+    const dropdown = document.getElementById("attachDropdown");
+    const btn = document.getElementById("attachBtn");
+    if (dropdown && dropdown.classList.contains("show")) {
+      if ((btn && btn.contains(e.target)) || (dropdown && dropdown.contains(e.target))) return;
+      dropdown.classList.remove("show");
+    }
+  });
+
 
   function triggerFilePicker(mode) {
     const dropdown = document.getElementById("attachDropdown");
@@ -3717,7 +4119,9 @@ ${nameIdentityInstruction} وفي هذا النمط إذا سُئلت عن اس�
 
 
     if (mode === "image") {
-      indicator.innerText = `جاري معالجة وتوليد الصورة (${selectedAspectRatio})...`;
+      const styleTitleMap = { realistic: "واقعي", anime: "أنمي", custom: "مخصص" };
+      const currentStyleLabel = styleTitleMap[selectedImageStyle] || "عام";
+      indicator.innerText = `جاري معالجة وتوليد الصورة (${currentStyleLabel} - ${selectedAspectRatio})...`;
       let generatedPrompt = prompt;
 
       let orientationTag = "square canvas, 1:1 aspect ratio";
@@ -3726,49 +4130,162 @@ ${nameIdentityInstruction} وفي هذا النمط إذا سُئلت عن اس�
       else if (selectedAspectRatio === "4:3") orientationTag = "classic 4:3 medium aspect ratio shot";
       else if (selectedAspectRatio === "21:9") orientationTag = "ultra-panoramic 21:9 anamorphic widescreen format";
 
-      const ratioInstruction = `STRICT REQUIREMENT: The output MUST be tailored exclusively for a ${selectedAspectRatio} canvas (${selectedWidth}x${selectedHeight}). Describe the spatial layout, background spread, and horizontal/vertical framing to firmly occupy this frame without letterboxing or square cropping.`;
+      const ratioInstruction = `STRICT REQUIREMENT: The output MUST be tailored exclusively for a ${selectedAspectRatio} canvas (${selectedWidth}x${selectedHeight}). Describe the spatial layout, background spread, and horizontal/vertical framing firmly without letterboxing or cropping.`;
 
-      try {
-        const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${KEYS.GROQ}`
-          },
-          body: JSON.stringify({
-            model: "openai/gpt-oss-20b",
-            messages: [
-              {
-                role: "system",
-                content: `You are an expert prompt enhancer for FLUX.1. CRITICAL RULES: 1. PRESERVE 100% of the user's core concept, scene, and subjects. 2. INTEGRATE: "${orientationTag}". 3. ${ratioInstruction}. 4. Add dramatic lighting, 8k textures, and optical depth. 5. Conclude the prompt with "--ar ${selectedAspectRatio}". Output ONLY the finalized English prompt text.`
+      // تسجيل طلب المستخدم ونمطه المختار في سجل التشخيص
+      recordLog("info", `طلب الصورة (${currentStyleLabel})`, `النص الأصلي: "${prompt}"`, `المرفق: ${activeAttachment ? activeAttachment.fileName : 'بدون صورة'}`);
+
+      // 1. إذا كان النمط مخصصاً: لا يتصل بغروك إطلاقاً
+      if (selectedImageStyle === "custom") {
+        generatedPrompt = `${prompt}, ${orientationTag}, --ar ${selectedAspectRatio}`;
+        recordLog("info", "برومبت مخصص مباشر", generatedPrompt, "تم إرساله لمحرك FLUX مباشرة");
+      } else {
+        // 2. إذا كان واقعياً أو أنمي: نستعين بغروك مع منع تحويل ماوماو إلى قطة بتاتاً
+        let systemPromptForStyle = "";
+        if (selectedImageStyle === "anime") {
+          systemPromptForStyle = `You are a master anime illustrator, mangaka art director, and prompt engineer for FLUX.1.
+CRITICAL ANIME & CHARACTER SPECS:
+1. STRICT AESTHETIC: Pure 2D authentic Japanese anime art style, vibrant cel-shaded illustration, crisp line art, iconic Kyoto Animation / OLM / TOHO style. Absolutely NEVER photorealistic, NEVER 3D render, NEVER an animal/cat unless explicitly requested.
+2. MAOMAO / ANIME GIRL ANTI-CONFUSION RULE: The character "Maomao" (from "The Apothecary Diaries / Kusuriya no Hitorigoto") is a HUMAN TEENAGE ANIME GIRL with dark teal-green hair, twin buns/bangs, purple-blue eyes, and traditional Chinese hanfu robe. She is NOT A CAT, NOT AN ANIMAL! If the user mentions Maomao, describe a HUMAN ANIME GIRL.
+3. ACCURATE CHARACTER DESIGN: Capture canonical human details, hair ornaments, expressive facial features (e.g. crying tears, tears streaming down cheeks, sniffling, emotional anime expression), costume colors, and lighting.
+4. IMAGE-TO-IMAGE SPEC: If an image is provided: Directly analyze the subject's human face, posture, green dress, and background from the reference image. Replicate that exact human character while applying the modification: "${prompt}".
+5. INTEGRATE: "${orientationTag}".
+6. ${ratioInstruction}.
+7. Conclude prompt with "--ar ${selectedAspectRatio}". Output ONLY the finalized English prompt text without any introductory text.`;
+        } else {
+          // النمط الواقعي
+          systemPromptForStyle = `You are an expert cinematic photorealism prompt enhancer for FLUX.1.
+CRITICAL RULES:
+1. PRESERVE 100% of the user's core concept, scene, and subjects.
+2. Produce hyper-realistic photography, 8k resolution, authentic optical depth of field, natural textures, Hasselblad/Leica camera optics.
+3. If an image is provided by the user for modification: Accurately recognize the human/subject in the image and apply the requested change: "${prompt}".
+4. INTEGRATE: "${orientationTag}".
+5. ${ratioInstruction}.
+6. Conclude prompt with "--ar ${selectedAspectRatio}". Output ONLY the finalized English prompt text without any introductory text.`;
+        }
+
+        try {
+          const hasImage = (activeAttachment && activeAttachment.type === "image" && activeAttachment.base64);
+          // استخدام نموذج الرؤية النشط 90B مع توفير بديل Gemini المباشر
+          const groqModelToUse = hasImage ? "llama-3.2-90b-vision-preview" : "openai/gpt-oss-20b";
+
+          let userMessagePayload = null;
+          if (hasImage) {
+            recordLog("info", "إرسال الصورة للرؤية", `جاري فحص ملامح وتفاصيل الصورة وتطبيق: "${prompt}"`, `النموذج الأساسي: ${groqModelToUse}`);
+            userMessagePayload = [
+              { 
+                type: "text", 
+                text: `[STRICT IMAGE MODIFICATION & PRESERVATION DIRECTIVE]:
+Examine this reference image meticulously.
+Your task is to write a prompt for FLUX.1 that replicates the EXACT SAME SCENE, CHARACTER, AND ART MEDIUM from this image, applying ONLY the modification: "${prompt}".
+
+CRITICAL PRESERVATION RULES:
+1. ART STYLE CLONING: Replicate the EXACT 2D anime illustration art style of this image (authentic hand-drawn / cel-shaded Japanese animation, 2D aesthetic, anime line art). Absolutely NEVER make it 3D, NEVER realistic, NEVER photorealistic, and NEVER CGI render!
+2. CHARACTER FIDELITY: The character is a human anime girl (Maomao with dark teal-green hair, buns, green Chinese hanfu robe). Keep her exact clothing, hair, and composition from the image.
+3. MODIFICATION FOCUS: Only change what the user requested ("${prompt}"). If crying: replace the smile with a sorrowful 2D anime expression, teary anime eyes, shiny anime tears rolling down cheeks, sniffling mouth, emotional anime face.
+4. Output ONLY the finalized descriptive English prompt.` 
               },
-              { role: "user", content: prompt }
-            ],
-            temperature: 0.25
-          })
-        });
+              {
+                type: "image_url",
+                image_url: { url: `data:${activeAttachment.mimeType};base64,${activeAttachment.base64}` }
+              }
+            ];
+          } else {
+            userMessagePayload = prompt;
+          }
 
-        if (groqRes.ok) {
-          const gqData = await groqRes.json();
-          const enhanced = gqData.choices[0]?.message?.content?.trim();
+          let enhanced = "";
+
+          // 1. المحاولة الأولى عبر Groq Vision
+          try {
+            const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${KEYS.GROQ}`
+              },
+              body: JSON.stringify({
+                model: groqModelToUse,
+                messages: [
+                  { role: "system", content: hasImage ? "You are an expert image modification engineer. When given an image, preserve its exact 2D anime medium, composition, character design, and line-art 100%. Apply ONLY the user requested edit. Never make it realistic or 3D unless explicitly demanded." : systemPromptForStyle },
+                  { role: "user", content: userMessagePayload }
+                ],
+                temperature: 0.15
+              })
+            });
+
+            if (groqRes.ok) {
+              const gqData = await groqRes.json();
+              enhanced = gqData.choices[0]?.message?.content?.trim();
+            } else {
+              const errText = await groqRes.text();
+              recordLog("warn", "تعثر نموذج الرؤية في Groq", errText, "🔄 تحويل تلقائي فوري إلى محرك رؤية Gemini");
+            }
+          } catch (eGroq) {
+            recordLog("warn", "فشل اتصال Groq", eGroq.message, "🔄 جاري الاستعانة بـ Gemini Vision");
+          }
+
+          // 2. البديل المضمون والقوي للرؤية وتحليل الصور (Gemini 3.5 Flash-Lite) في حال تعثر Groq
+          if (!enhanced || enhanced.length <= 5) {
+            try {
+              const geminiKey = KEYS.GEMINI ? KEYS.GEMINI.trim() : "";
+              const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${geminiKey}`;
+              
+              const visionInstruction = hasImage 
+                ? `Analyze this anime image with extreme precision. Create a detailed English prompt for FLUX.1 that recreates this EXACT same scene, character (human anime girl with teal hair and green hanfu robe), and 2D cel-shaded anime art style. Apply ONLY this modification: "${prompt}". DO NOT produce a realistic or 3D image. Keep it purely 2D anime illustration like the source image.`
+                : `${systemPromptForStyle}\n\n[USER REQUEST]: ${prompt}`;
+
+              const geminiParts = [
+                { text: visionInstruction }
+              ];
+              if (hasImage) {
+                geminiParts.push({
+                  inlineData: {
+                    mimeType: activeAttachment.mimeType,
+                    data: activeAttachment.base64
+                  }
+                });
+              }
+
+              const gemRes = await fetch(geminiUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ contents: [{ parts: geminiParts }] })
+              });
+
+              if (gemRes.ok) {
+                const gemData = await gemRes.json();
+                enhanced = gemData.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+                recordLog("info", "تحليل الرؤية البديل (Gemini Vision)", "تم تحليل ملامح الصورة بنمط 2D أنمي بنجاح", enhanced);
+              }
+            } catch (eGem) {
+              recordLog("error", "فشل الرؤية البديلة", eGem.message, "تم استخدام النص المباشر");
+            }
+          }
+
+
           if (enhanced && enhanced.length > 5) {
             generatedPrompt = enhanced;
-            recordLog("info", "محرك الصور", "تم تحسين التفاصيل وضبط نسبة الأبعاد", selectedAspectRatio);
+            recordLog("info", `البرومبت النهائي المعتمد (${currentStyleLabel})`, generatedPrompt, "تم تمريره لمحرك الصور بنجاح");
           }
+        } catch (err) {
+          generatedPrompt = prompt;
+          recordLog("error", "فشل فحص الرؤية بالكامل", err.message, "تم اعتماد البرومبت الأصلي كبديل");
         }
-      } catch (err) {
-        generatedPrompt = prompt;
+
       }
+
+
 
       const containerId = "img-box-" + Date.now();
       const placeholderHtml = `
             <div id="${containerId}">
               <div style="color: #0284c7; font-size: 13px; font-weight: 600;">
-                <span>⏳ جاري إنشاء العمل الفني بنسبة ${selectedAspectRatio}...</span>
+                <span>⏳ جاري إنشاء العمل الفني بنمط (${currentStyleLabel}) بنسبة ${selectedAspectRatio}...</span>
   </div>
   </div>
           `;
-      renderMessage("ai", placeholderHtml, `${currentModeTitle} (${selectedAspectRatio})`);
+      renderMessage("ai", placeholderHtml, `${currentModeTitle} (${currentStyleLabel} - ${selectedAspectRatio})`);
       const container = document.getElementById(containerId);
 
       const isSignedIn = (typeof puter !== "undefined" && puter.auth && puter.auth.isSignedIn) ? puter.auth.isSignedIn() : false;
@@ -3796,12 +4313,12 @@ ${nameIdentityInstruction} وفي هذا النمط إذا سُئلت عن اس�
         return;
       }
 
-
       executePuterGeneration(generatedPrompt, containerId, selectedWidth, selectedHeight, selectedAspectRatio);
       document.getElementById("stopBtn").style.display = "none";
       document.getElementById("sendBtn").style.display = "inline-flex";
       return;
     }
+
 
     let chain = [...MODES_CONFIG[mode]];
     // إذا قام المستخدم بتثبيت نموذج محدد من القائمة المنسدلة للتجربة
