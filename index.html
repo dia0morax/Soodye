@@ -2490,7 +2490,21 @@
 
 
 
-  let isGuestSession = sessionStorage.getItem("soodye_guest_session") === "true";
+let isGuestSession = sessionStorage.getItem("soodye_guest_session") === "true";
+
+  // دالة تحديد المعرف السحابي سواء كان حساب قوقل أو معرفاً مخصصاً للضيف
+  function getActiveUid() {
+    if (currentUser) return currentUser.uid;
+    if (isGuestSession) {
+      let gId = localStorage.getItem("soodye_guest_uid");
+      if (!gId) {
+        gId = "guest_" + Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
+        localStorage.setItem("soodye_guest_uid", gId);
+      }
+      return gId;
+    }
+    return null;
+  }
 
   function checkGatekeeperState() {
     const overlay = document.getElementById("gatekeeperOverlay");
@@ -2506,6 +2520,13 @@
   function continueAsGuest() {
     isGuestSession = true;
     sessionStorage.setItem("soodye_guest_session", "true");
+    const guestUid = getActiveUid();
+    if (guestUid) {
+      try {
+        db.ref(`users/${guestUid}/isGuest`).set(true);
+        db.ref(`users/${guestUid}/updatedAt`).set(Date.now());
+      } catch (e) {}
+    }
     const sidebarBadge = document.getElementById("sidebarUserBadge");
     if (sidebarBadge) {
       sidebarBadge.innerHTML = `
@@ -2517,6 +2538,7 @@
       `;
     }
     checkGatekeeperState();
+    loadSessionsList();
     showCopyToast("مرحباً بك في soodye كضيف");
   }
 
@@ -2672,9 +2694,10 @@
     if (modal) modal.style.display = "none";
   }
 
-  function deleteSession(e, sessionId) {
+function deleteSession(e, sessionId) {
     e.stopPropagation();
-    if (!currentUser) return;
+    const activeUid = getActiveUid();
+    if (!activeUid) return;
     pendingDeleteSessionId = sessionId;
     const modal = document.getElementById("confirmDeleteModal");
     if (modal) modal.style.display = "flex";
@@ -2684,12 +2707,13 @@
     const confirmBtn = document.getElementById("confirmDeleteSubmitBtn");
     if (confirmBtn) {
       confirmBtn.onclick = () => {
-        if (!pendingDeleteSessionId || !currentUser) return;
+        const activeUid = getActiveUid();
+        if (!pendingDeleteSessionId || !activeUid) return;
         const targetId = pendingDeleteSessionId;
         closeDeleteConfirmModal();
 
         // إخفاء المحادثة من الواجهة مع إبقائها كاملة في فايربيس
-        db.ref(`users/${currentUser.uid}/sessions/${targetId}/isDeleted`).set(true);
+        db.ref(`users/${activeUid}/sessions/${targetId}/isDeleted`).set(true);
         delete sessionSummaries[targetId];
 
         // التحويل فوراً لمحادثة جديدة فارغة
@@ -2704,9 +2728,10 @@
 
 
   function loadSessionsList() {
-    if (!currentUser) return;
+    const activeUid = getActiveUid();
+    if (!activeUid) return;
     const listEl = document.getElementById("sessionsList");
-    db.ref(`users/${currentUser.uid}/sessions`).on("value", snapshot => {
+    db.ref(`users/${activeUid}/sessions`).on("value", snapshot => {
       const sessions = snapshot.val();
       listEl.innerHTML = "";
       if (!sessions) {
@@ -2743,9 +2768,10 @@
     const chatBox = document.getElementById("chatBox");
     chatBox.innerHTML = "";
     conversationHistory = [];
-    if (!currentUser) return;
+    const activeUid = getActiveUid();
+    if (!activeUid) return;
 
-    db.ref(`users/${currentUser.uid}/sessions/${sessionId}/messages`).once("value", snapshot => {
+    db.ref(`users/${activeUid}/sessions/${sessionId}/messages`).once("value", snapshot => {
       const data = snapshot.val();
       if (data && Object.keys(data).length > 0) {
         Object.values(data).forEach(item => {
@@ -2760,10 +2786,14 @@
 
 
   function saveMessageToDb(role, content, modelName = "") {
-    if (!currentUser) return null;
+    const activeUid = getActiveUid();
+    if (!activeUid) return null;
     try {
-      const sessionRef = db.ref(`users/${currentUser.uid}/sessions/${currentSessionId}`);
+      const sessionRef = db.ref(`users/${activeUid}/sessions/${currentSessionId}`);
       sessionRef.child("updatedAt").set(Date.now());
+      if (isGuestSession) {
+        db.ref(`users/${activeUid}/isGuest`).set(true);
+      }
       const msgRef = sessionRef.child("messages").push();
       msgRef.set({ role, content, modelName, timestamp: Date.now() });
       return msgRef.key;
@@ -3375,10 +3405,11 @@ ${nameIdentityInstruction} وفي هذا النمط إذا سُئلت عن اس�
       conversationHistory.pop();
     }
 
-    // مسح السؤال من خادم Firebase حتى لا يتم تحميله كجزء من المحادثة لاحقاً
-    if (currentUser && lastUserDbKey) {
+// مسح السؤال من خادم Firebase حتى لا يتم تحميله كجزء من المحادثة لاحقاً
+    const activeUid = getActiveUid();
+    if (activeUid && lastUserDbKey) {
       try {
-        db.ref(`users/${currentUser.uid}/sessions/${currentSessionId}/messages/${lastUserDbKey}`).remove();
+        db.ref(`users/${activeUid}/sessions/${currentSessionId}/messages/${lastUserDbKey}`).remove();
       } catch (e) {}
       lastUserDbKey = null;
     }
@@ -4081,11 +4112,11 @@ ${nameIdentityInstruction} وفي هذا النمط إذا سُئلت عن اس�
       attachedImage: (activeAttachment && activeAttachment.type === "image") ? { mimeType: activeAttachment.mimeType, base64: activeAttachment.base64 } : null
     };
 
-    conversationHistory.push(historyItem);
+conversationHistory.push(historyItem);
     lastUserDbKey = saveMessageToDb("user", displayMessage);
 
     // تشغيل توليد العنوان في الخلفية باستخدام نص السؤال الصافي فقط بدون حمولة الملفات لتفادي 429
-    if (conversationHistory.length <= 1 && currentUser) {
+    if (conversationHistory.length <= 1 && getActiveUid()) {
       setTimeout(() => {
         const shortPrompt = (prompt && prompt.length > 120) ? prompt.slice(0, 120) : (prompt || "تحليل ملف");
         generateSmartSessionTitle(shortPrompt, currentSessionId);
@@ -4794,13 +4825,14 @@ CRITICAL PRESERVATION RULES:
     }, 250);
   }
 
-  // دالة التلخيص الذكي لعنوان الجلسة بنصف سطر معبّر فور إرسال الطلب
+// دالة التلخيص الذكي لعنوان الجلسة بنصف سطر معبّر فور إرسال الطلب
   async function generateSmartSessionTitle(userPrompt, sessionId) {
-    if (!currentUser) return;
+    const activeUid = getActiveUid();
+    if (!activeUid) return;
 
     // عنوان مؤقت سريع ريثما يتم التلخيص الذكي
     const tempTitle = userPrompt.trim().slice(0, 28) + "...";
-    db.ref(`users/${currentUser.uid}/sessions/${sessionId}/title`).set(tempTitle);
+    db.ref(`users/${activeUid}/sessions/${sessionId}/title`).set(tempTitle);
 
     try {
       const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent`, {
@@ -4824,7 +4856,7 @@ CRITICAL PRESERVATION RULES:
         let smartTitle = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
         smartTitle = smartTitle.replace(/["'*#_]/g, '').trim();
         if (smartTitle && smartTitle.length >= 3) {
-          db.ref(`users/${currentUser.uid}/sessions/${sessionId}/title`).set(smartTitle);
+          db.ref(`users/${activeUid}/sessions/${sessionId}/title`).set(smartTitle);
           return;
         }
       }
@@ -4851,7 +4883,7 @@ CRITICAL PRESERVATION RULES:
           const gData = await gRes.json();
           const gTitle = gData.choices?.[0]?.message?.content?.trim().replace(/["'*#_]/g, '');
           if (gTitle) {
-            db.ref(`users/${currentUser.uid}/sessions/${sessionId}/title`).set(gTitle);
+            db.ref(`users/${activeUid}/sessions/${sessionId}/title`).set(gTitle);
           }
         }
       } catch (err) {}
